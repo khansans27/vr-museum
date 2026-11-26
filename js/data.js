@@ -56,13 +56,17 @@ const DATA_LANTAI = [
                         g: 128, e: 10,
                         judul: 'Instalasi Pohon Gitar & Mahkota Simbal',
                         isi: 'Instalasi seni vertikal di pusat serambi Lantai 1 yang tersusun dari puluhan gitar akustik, gitar elektrik, instrumen petik di bagian batang, serta susunan simbal perunggu di bagian tajuk langit-langit berbintang.',
-                        foto: 'img/detail_pohon_gitar.jpg'
+                        foto: 'img/detail_pohon_gitar.jpg',
+                        audio: 'audio/pohon_gitar.mp3',
+                        labelAudio: 'Petikan Gitar Akustik'
                     },
                     {
                         g: 318, e: 6,
                         judul: 'Pipe Organ Gereja Kuno Polandia (1899)',
                         isi: 'Organ pipa (pipe organ) bersejarah buatan Polandia tahun 1899 yang menjadi salah satu koleksi berusia lebih dari satu abad di Lantai 1. Suaranya dihasilkan oleh hembusan udara bertekanan melalui deretan pipa kayu dan logam dengan panjang berbeda sesuai tinggi nada.',
-                        foto: 'img/detail_pipe_organ.jpg'
+                        foto: 'img/detail_pipe_organ.jpg',
+                        audio: 'audio/pipe_organ.mp3',
+                        labelAudio: 'Pipe Organ Gereja Klasik'
                     }
                 ]
             },
@@ -76,13 +80,17 @@ const DATA_LANTAI = [
                         g: 185, e: 2,
                         judul: 'Koleksi Harpa Konser (Concert Harp)',
                         isi: 'Harpa konser merupakan instrumen kordofon berdawai puluhan yang dipetik dengan kedua tangan. Pada harpa pedal modern, pemain menggunakan tujuh pedal kaki untuk mengubah ketegangan senar secara setengah nada (semitone) sehingga dapat memainkan seluruh tangga nada kromatis.',
-                        foto: 'img/detail_harpa.jpg'
+                        foto: 'img/detail_harpa.jpg',
+                        audio: 'audio/harpa_konser.mp3',
+                        labelAudio: 'Harpa Konser Klasik'
                     },
                     {
                         g: 248, e: 4,
                         judul: 'Galeri Instrumen Dawai & Xilofon Tradisional',
                         isi: 'Deretan alat musik petik, gesek, dan perkusi bilah kayu lintas budaya yang memperlihatkan bagaimana bentuk kotak resonansi memengaruhi warna suara setiap instrumen.',
-                        foto: 'img/detail_dawai_klasik.jpg'
+                        foto: 'img/detail_dawai_klasik.jpg',
+                        audio: 'audio/xilofon_kayu.mp3',
+                        labelAudio: 'Xilofon & Marimba Kayu'
                     }
                 ]
             },
@@ -96,19 +104,25 @@ const DATA_LANTAI = [
                         g: 168, e: 4,
                         judul: 'Drum Set Terry Bozzio (Satu-satunya di Indonesia)',
                         isi: 'Set drum kustom raksasa milik drummer virtuoso Amerika Serikat Terry Bozzio (mantan drummer Frank Zappa dan grup Missing Persons). Konfigurasinya menggabungkan 6 bass drum, puluhan tom-tom yang disetel secara kromatis-melodis, belasan pedal kaki, dan deretan simbal efek. Koleksi ini merupakan satu-satunya di Indonesia dan salah satu dari sedikit unit yang dipamerkan di Asia.',
-                        foto: 'img/detail_bozzio.jpg'
+                        foto: 'img/detail_bozzio.jpg',
+                        audio: 'audio/drum_bozzio.mp3',
+                        labelAudio: 'Permainan Drum Set Akustik'
                     },
                     {
                         g: 108, e: 8,
                         judul: 'Koleksi Alat Musik Tradisional Eropa',
                         isi: 'Etalase benua Eropa yang menampilkan ragam instrumen dawai dan mekanik, mulai dari keluarga biola, mandolin, balalaika, zither, akordeon, hingga Hurdy-Gurdy (alat musik dawai abad pertengahan yang digesek oleh roda kayu berputar melalui engkol tangan).',
-                        foto: 'img/detail_eropa.jpg'
+                        foto: 'img/detail_eropa.jpg',
+                        audio: 'audio/hurdy_gurdy_eropa.mp3',
+                        labelAudio: 'Hurdy-Gurdy (Dawai Engkol Eropa)'
                     },
                     {
                         g: 215, e: 8,
                         judul: 'Koleksi Timur Tengah & India (Oud, Darbuka, Sitar & Tabla)',
                         isi: 'Pameran berdampingan dua tradisi musikal bersejarah: instrumen Timur Tengah seperti Oud (lute tanpa fret yang menjadi leluhur lute Eropa), Qanun, Rebana, dan Darbuka untuk tangga nada maqam; serta instrumen klasik India seperti Sitar berdawai simpatetik, Sarod, Tambura, dan sepasang kendang Tabla untuk komposisi raga.',
-                        foto: 'img/detail_timur_tengah.jpg'
+                        foto: 'img/detail_timur_tengah.jpg',
+                        audio: 'audio/sitar_india.mp3',
+                        labelAudio: 'Sitar Klasik India (Raga Yaman)'
                     }
                 ]
             },
@@ -122,7 +136,9 @@ const DATA_LANTAI = [
                         g: 102, e: 0,
                         judul: 'Ansambel Perkusi Bilah & Gong Tradisional',
                         isi: 'Panggung terbuka di tengah aula Lantai 1 yang memamerkan perpaduan xilofon kayu, metallofon perunggu, kendang, dan gong gantung dari tradisi musik Asia Tenggara dan Afrika.',
-                        foto: 'img/detail_panggung_tengah.jpg'
+                        foto: 'img/detail_panggung_tengah.jpg',
+                        audio: 'audio/perkusi_bilah.mp3',
+                        labelAudio: 'Perkusi Bilah Kayu (Balafon)'
                     }
                 ]
             },
@@ -136,7 +152,9 @@ const DATA_LANTAI = [
                         g: 282, e: -6,
                         judul: 'Didgeridoo Suku Aborigin Australia',
                         isi: 'Didgeridoo adalah instrumen tiup kayu (aerofon) tradisional masyarakat pribumi Aborigin di Australia bagian utara yang telah dimainkan selama ribuan tahun. Batangnya berasal dari kayu eukaliptus yang berongga secara alami oleh rayap, dimainkan dengan getaran bibir dan teknik pernapasan melingkar (circular breathing) sehingga menghasilkan dengung ritmis tanpa putus.',
-                        foto: 'img/detail_didgeridoo.jpg'
+                        foto: 'img/detail_didgeridoo.jpg',
+                        audio: 'audio/didgeridoo.mp3',
+                        labelAudio: 'Didgeridoo Aborigin Australia'
                     }
                 ]
             },
@@ -150,13 +168,17 @@ const DATA_LANTAI = [
                         g: 82, e: 6,
                         judul: 'Evolusi Grand Piano & Lonceng Nada',
                         isi: 'Menjelaskan perkembangan instrumen tuts berdawai sejak penemuan gravicembalo col piano e forte oleh Bartolomeo Cristofori di Italia sekitar tahun 1700 hingga konstruksi rangka besi cor pada Grand Piano konser modern, didampingi perangkat lonceng logam bernada di depannya.',
-                        foto: 'img/detail_grand_piano_lt1.jpg'
+                        foto: 'img/detail_grand_piano_lt1.jpg',
+                        audio: 'audio/fortepiano_evolusi.mp3',
+                        labelAudio: 'Fortepiano Klasik'
                     },
                     {
                         g: 205, e: 4,
                         judul: 'Etalase Instrumen Petik & Kecapi Asia',
                         isi: 'Pajangan melengkung yang menghimpun variasi kecapi kotak, siter kayu, dan lute berleher panjang dari berbagai wilayah Asia Timur dan Asia Tenggara.',
-                        foto: 'img/detail_petik_asia.jpg'
+                        foto: 'img/detail_petik_asia.jpg',
+                        audio: 'audio/kecapi_asia.mp3',
+                        labelAudio: 'Kecapi Petik Asia (Koto)'
                     }
                 ]
             },
@@ -170,13 +192,17 @@ const DATA_LANTAI = [
                         g: 62, e: 6,
                         judul: 'Koleksi Musik Tradisional Tiongkok (Guzheng, Erhu & Pipa)',
                         isi: 'Zona Tiongkok memamerkan keluarga instrumen klasik berusia ribuan tahun: Guzheng (kecapi petik horizontal bersenar banyak dengan penyangga nada geser), Pipa (lute pir empat senar), Ruan, Erhu (rebab gesek dua senar), seruling bambu Dizi, Sheng (organ mulut), serta gong perunggu.',
-                        foto: 'img/detail_china.jpg'
+                        foto: 'img/detail_china.jpg',
+                        audio: 'audio/guzheng_china.mp3',
+                        labelAudio: 'Guzheng Tradisional Tiongkok'
                     },
                     {
                         g: 145, e: 6,
                         judul: 'Ansambel Gamelan Jawa & Wayang',
                         isi: 'Panggung gamelan berlatar siluet gunungan dan wayang kulit yang menampilkan bonang, saron, gender, kenong, dan gong ageng dalam sistem laras slendro serta pelog.',
-                        foto: 'img/detail_ansambel_nusantara.jpg'
+                        foto: 'img/detail_ansambel_nusantara.jpg',
+                        audio: 'audio/gamelan_jawa.mp3',
+                        labelAudio: 'Gender & Gamelan Jawa'
                     }
                 ]
             },
@@ -190,13 +216,17 @@ const DATA_LANTAI = [
                         g: 135, e: 6,
                         judul: 'Panggung Besar Gamelan & Karawitan Nusantara',
                         isi: 'Menampilkan perangkat lengkap karawitan dari Jawa, Sunda, dan Bali. Setiap bilah dan pencon perunggu ditempa secara khusus agar menghasilkan perpaduan tabuhan melodis, ritmis, dan penanda struktur gending.',
-                        foto: 'img/detail_gamelan_nusantara.jpg'
+                        foto: 'img/detail_gamelan_nusantara.jpg',
+                        audio: 'audio/gamelan_nusantara.mp3',
+                        labelAudio: 'Bonang Gamelan Degung Nusantara'
                     },
                     {
                         g: 295, e: 2,
                         judul: 'Sudut Perkusi Tradisional (Kendang, Bedug & Rebana)',
                         isi: 'Podium bundar bertajuk Sudut Perkusi yang menghimpun alat musik membranofon Nusantara, mulai dari kendang pengatur tempo tari dan gamelan, tifa dari Indonesia Timur, hingga ragam rebana dan bedug.',
-                        foto: 'img/detail_perkusi_bundar.jpg'
+                        foto: 'img/detail_perkusi_bundar.jpg',
+                        audio: 'audio/kendang_nusantara.mp3',
+                        labelAudio: 'Tabuhan Kendang Tradisional'
                     }
                 ]
             },
@@ -210,7 +240,9 @@ const DATA_LANTAI = [
                         g: 102, e: 4,
                         judul: 'Ragam Instrumen Daerah: Angklung, Kolintang & Sasando',
                         isi: 'Memperkenalkan kekayaan organologi daerah Indonesia: Angklung bambu Jawa Barat yang telah diakui UNESCO sebagai Warisan Budaya Takbenda (2010), Kolintang kayu resonansi dari Minahasa Sulawesi Utara, serta instrumen petik dan tabuh dari berbagai kepulauan Nusantara.',
-                        foto: 'img/detail_alat_musik_daerah.jpg'
+                        foto: 'img/detail_alat_musik_daerah.jpg',
+                        audio: 'audio/angklung_daerah.mp3',
+                        labelAudio: 'Ansambel Angklung Bambu'
                     }
                 ]
             },
@@ -224,7 +256,9 @@ const DATA_LANTAI = [
                         g: 270, e: 8,
                         judul: 'Dinding Ensiklopedia Musical Instruments',
                         isi: 'Instalasi dinding lengkung setinggi ruangan yang menyusun puluhan instrumen petik, gesek, tiup, dan perkusi dari berbagai negara secara berdampingan sehingga pengunjung dapat membandingkan ukuran serta anatomi akustiknya dalam satu pandangan.',
-                        foto: 'img/detail_musical_wall.jpg'
+                        foto: 'img/detail_musical_wall.jpg',
+                        audio: 'audio/akordeon_dunia.mp3',
+                        labelAudio: 'Akordeon & Instrumen Rakyat'
                     }
                 ]
             }
@@ -252,13 +286,17 @@ const DATA_LANTAI = [
                         g: 278, e: 10,
                         judul: 'Sejarah Keroncong Kampung Tugu & Ansambel Cak-Cuk-Selo',
                         isi: 'Musik keroncong berakar sejak 1661 di Kampung Tugu (Cilincing, Jakarta Utara) melalui komunitas keturunan Portugis-Nusantara (Mardijkers) yang mengembangkan tradisi musik Moresco dan Cafrinho. Ciri khas utamanya terletak pada jalinan ritmis Cuk (berdawai 3 nilon turunan cavaquinho yang berbunyi crong-crong), Cak (berdawai 4 baja pengisi ketukan balik), serta Selo (cello yang dipetik/dibetot menyerupai kendang), berpadu dengan biola, fluit, gitar, dan kontrabas.',
-                        foto: 'img/detail_keroncong.jpg'
+                        foto: 'img/detail_keroncong.jpg',
+                        audio: 'audio/cuk_keroncong.mp3',
+                        labelAudio: 'Petikan Ukulele / Cuk Keroncong'
                     },
                     {
                         g: 172, e: 6,
                         judul: 'Sudut Maestro Keroncong Indonesia (Gesang & Waljinah)',
                         isi: 'Ruang penghormatan bagi tokoh besar pelestari keroncong Indonesia, termasuk maestro Gesang Martohartono pencipta lagu Bengawan Solo (1940) yang diterjemahkan ke berbagai bahasa dunia, serta Ratu Keroncong Waljinah asal Surakarta yang memopulerkan langgam keroncong dan karya Walang Kekek.',
-                        foto: 'img/detail_maestro_keroncong.jpg'
+                        foto: 'img/detail_maestro_keroncong.jpg',
+                        audio: 'audio/orkes_keroncong_1927.mp3',
+                        labelAudio: 'Arsip Orkes Keroncong Klasik'
                     }
                 ]
             },
@@ -278,7 +316,9 @@ const DATA_LANTAI = [
                         g: 102, e: 2,
                         judul: 'Instalasi Giant Floor Piano Interaktif',
                         isi: 'Tuts piano ukuran besar di atas lantai yang menyala dan berbunyi saat diinjak oleh pengunjung, dirancang sebagai wahana edukasi pengenalan tangga nada diatonis secara kinestetik.',
-                        foto: 'img/detail_floor_piano.jpg'
+                        foto: 'img/detail_floor_piano.jpg',
+                        audio: 'audio/floor_piano.mp3',
+                        labelAudio: 'Rangkaian Nada Tuts Piano'
                     }
                 ]
             },
@@ -320,7 +360,9 @@ const DATA_LANTAI = [
                         g: 268, e: 8,
                         judul: 'Arsip Gitar Pribadi & Memorabilia Band Indonesia',
                         isi: 'Dinding koleksi artefak asli musisi dan grup band Indonesia, meliputi gitar elektrik yang pernah dipakai dalam proses rekaman maupun tur panggung, kaset rilisan awal, serta dokumentasi sejarah industri rekaman nasional.',
-                        foto: 'img/detail_memorabilia_indonesia.jpg'
+                        foto: 'img/detail_memorabilia_indonesia.jpg',
+                        audio: 'audio/gitar_elektrik_clean.mp3',
+                        labelAudio: 'Gitar Elektrik Clean Chord'
                     }
                 ]
             },
@@ -354,13 +396,17 @@ const DATA_LANTAI = [
                         g: 98, e: 8,
                         judul: 'Dinding Legenda Gitar & Rock: Eric Clapton, Queen & Deep Purple',
                         isi: 'Menghimpun gitar elektrik, piringan emas, dan dokumentasi konser ikon blues-rock dunia Eric Clapton, kuartet rock progresif-teatrikal Inggris Queen, serta pelopor hard rock Deep Purple, berdampingan dengan sejarah grup rock Indonesia God Bless.',
-                        foto: 'img/GP__2275.JPG'
+                        foto: 'img/GP__2275.JPG',
+                        audio: 'audio/gitar_distorsi_rock.mp3',
+                        labelAudio: 'Gitar Elektrik Distorsi Rock'
                     },
                     {
                         g: 252, e: 4,
                         judul: 'Figur Panggung Freddie Mercury, KISS & Tony Q Rastafara',
                         isi: 'Panggung figur musisi berkarakter visual kuat: Freddie Mercury dengan jubah mahkota ikonik tur Magic (1986), kostum zirah berduri khas grup glam-hard rock KISS, serta dokumentasi musisi reggae Indonesia Tony Q Rastafara.',
-                        foto: 'img/detail_freddie_kiss.jpg'
+                        foto: 'img/detail_freddie_kiss.jpg',
+                        audio: 'audio/ritme_reggae_rock.mp3',
+                        labelAudio: 'Ritme Bass & Gitar Reggae'
                     }
                 ]
             },
@@ -374,13 +420,17 @@ const DATA_LANTAI = [
                         g: 78, e: 6,
                         judul: "King of Rock 'n' Roll: Elvis Presley",
                         isi: "Panggung merah berlampu sorot yang menampilkan figur Elvis Presley dalam balutan jumpsuit putih berhias permata era konser Las Vegas 1970-an. Sejak pertengahan 1950-an, Elvis memadukan rhythm and blues Afrika-Amerika dengan musik country dan gospel hingga melambungkan budaya Rock 'n' Roll ke seluruh dunia.",
-                        foto: 'img/detail_elvis.jpg'
+                        foto: 'img/detail_elvis.jpg',
+                        audio: 'audio/gitar_rock_n_roll.mp3',
+                        labelAudio: "Riff Gitar Rock 'n' Roll"
                     },
                     {
                         g: 162, e: 6,
                         judul: 'Etalase Gitar Bertanda Tangan Asli (With Authentic Signature)',
                         isi: 'Deretan gitar elektrik dan akustik koleksi khusus yang membubuhkan tanda tangan asli para musisi dalam dan luar negeri, dilengkapi sertifikat keaslian serta potret Bob Marley di sisi kiri etalase.',
-                        foto: 'img/detail_signed_guitars.jpg'
+                        foto: 'img/detail_signed_guitars.jpg',
+                        audio: 'audio/gitar_blues_akustik.mp3',
+                        labelAudio: 'Gitar Akustik Blues'
                     },
                     {
                         g: 298, e: 4,
@@ -400,7 +450,9 @@ const DATA_LANTAI = [
                         g: 188, e: 8,
                         judul: "Sejarah Jazz New Orleans & Silsilah Rock 'n' Roll",
                         isi: "Dua panel infografis besar yang memetakan kelahiran musik Jazz di New Orleans pada awal abad ke-20 dari pertemuan tradisi Afrika-Amerika, Ragtime, Blues, dan brass band menjadi era Swing, Bebop, Cool Jazz, hingga Fusion; serta bagan cabang evolusi Rock 'n' Roll sejak 1950-an.",
-                        foto: 'img/detail_jazz_board.jpg'
+                        foto: 'img/detail_jazz_board.jpg',
+                        audio: 'audio/jazz_new_orleans.mp3',
+                        labelAudio: 'Ansambel Brass Jazz New Orleans'
                     },
                     {
                         g: 335, e: 10,
@@ -420,13 +472,17 @@ const DATA_LANTAI = [
                         g: 190, e: 6,
                         judul: 'Panggung World Festival Jazz Stage',
                         isi: 'Replika panggung festival jazz internasional lengkap dengan penataan instrumen band, saksofon, gitar hollow-body, piano, dan pencahayaan panggung biru.',
-                        foto: 'img/GP__2291.JPG'
+                        foto: 'img/GP__2291.JPG',
+                        audio: 'audio/saksofon_jazz.mp3',
+                        labelAudio: 'Saksofon Panggung Jazz'
                     },
                     {
                         g: 58, e: 6,
                         judul: 'Sudut Klasik Jazz Bar & Arsip Musik Blues',
                         isi: 'Ruang bertema klub jazz klasik yang memamerkan pemutar piringan hitam, radio tabung, foto legenda blues dan jazz seperti B.B. King dan Louis Armstrong, serta koleksi vinyl era 1940-an hingga 1960-an.',
-                        foto: 'img/GP__2289.JPG'
+                        foto: 'img/GP__2289.JPG',
+                        audio: 'audio/blues_jazz_bar.mp3',
+                        labelAudio: 'Harmonika & Musik Blues Klasik'
                     }
                 ]
             }
@@ -454,13 +510,17 @@ const DATA_LANTAI = [
                         g: 172, e: 4,
                         judul: 'Deretan Piano Tegak Klasik (Upright Piano Antik)',
                         isi: 'Menampilkan koleksi baby piano dan upright piano klasik dengan ukiran kayu Eropa dari berbagai dekade. Berbeda dari grand piano yang merentangkan senar secara horizontal, upright piano menyusun rangka senar dan mekanik pemukul (action) secara vertikal agar hemat ruang namun tetap kaya resonansi.',
-                        foto: 'img/detail_piano_klasik.jpg'
+                        foto: 'img/detail_piano_klasik.jpg',
+                        audio: 'audio/piano_tegak_antik.mp3',
+                        labelAudio: 'Upright Piano Klasik (Ragtime 1908)'
                     },
                     {
                         g: 275, e: 4,
                         judul: 'Koleksi Gramofon & Radio Tabung Vintage (1920-1990)',
                         isi: 'Lemari arsip teknologi audio rumah tangga lintas generasi dari Eropa dan Amerika Serikat, mulai dari gramofon engkol berjarum baja, radio tabung vakum berbingkai kayu era 1920-an hingga 1950-an, hingga perangkat pemutar pita magnetik.',
-                        foto: 'img/detail_gramofon_lt3.jpg'
+                        foto: 'img/detail_gramofon_lt3.jpg',
+                        audio: 'audio/gramofon_antik.mp3',
+                        labelAudio: 'Rekaman Silinder Fonograf & Gramofon Kuno'
                     }
                 ]
             },
@@ -474,7 +534,9 @@ const DATA_LANTAI = [
                         g: 308, e: -2,
                         judul: 'Kotak Musik Mekanik (Polyphone 1857 & Orgue de Barbarie)',
                         isi: 'Lantai 3 menyimpan koleksi instrumen musik mekanik otomatis berumur lebih dari seabad. Setelah mekanisme sisir logam bernada dirintis pembuat jam Jenewa Antoine Favre-Salomon (1796), lahirlah Polyphone piringan logam berlubang tahun 1857 asal Prancis (cikal bakal jukebox) serta organ jalanan berpengkol seperti Orgue de Barbarie dan Le Ludion.',
-                        foto: 'img/detail_music_box.jpg'
+                        foto: 'img/detail_music_box.jpg',
+                        audio: 'audio/kotak_musik_polyphone.mp3',
+                        labelAudio: 'Kotak Musik Piringan Polyphon Antik'
                     }
                 ]
             },
@@ -488,7 +550,9 @@ const DATA_LANTAI = [
                         g: 252, e: 6,
                         judul: 'Mini Concert Hall & Grand Piano Klasik',
                         isi: 'Ruang konser puncak di Lantai 3 yang memadukan Grand Piano klasik hitam mengilap, figur konduktor di depan latar orkestra simfoni bertirai beludru merah, serta arsitektur klasik Eropa sebagai penutup perjalanan edukasi Museum Musik Dunia.',
-                        foto: 'img/detail_konser_klasik.jpg'
+                        foto: 'img/detail_konser_klasik.jpg',
+                        audio: 'audio/konser_grand_piano.mp3',
+                        labelAudio: 'Grand Piano Konser (Chopin Nocturne)'
                     }
                 ]
             }

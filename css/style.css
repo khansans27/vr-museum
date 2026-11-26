@@ -1032,6 +1032,138 @@ body.hud-tersembunyi #hud-navigasi {
     border-top: 1px solid var(--border-subtle);
 }
 
+.modal-audio-wadah {
+    margin-bottom: 14px;
+    padding: 12px 14px;
+    border: 1px solid var(--border-control);
+    border-left: 3px solid var(--brass);
+    border-radius: var(--radius-control);
+    background-color: #161412;
+}
+
+.modal-audio-kepala {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.modal-audio-judul {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--brass);
+}
+
+.modal-audio-status {
+    font-size: 0.78rem;
+    color: var(--ink-secondary);
+}
+
+.modal-audio-kontrol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.tombol-audio-utama {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 44px;
+    min-width: 132px;
+    padding: 8px 14px;
+    border-radius: var(--radius-control);
+    border: 1px solid var(--brass);
+    background-color: var(--brass);
+    color: #121110;
+    font-size: 0.86rem;
+    font-weight: 700;
+    transition: background-color 0.15s ease, transform 0.12s ease;
+}
+
+.tombol-audio-utama:hover:not(:disabled) {
+    background-color: var(--brass-hover);
+}
+
+.tombol-audio-utama:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.tombol-audio-utama:disabled {
+    opacity: 0.5;
+}
+
+.modal-audio-geser-wrap {
+    flex: 1 1 170px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.slider-audio {
+    flex: 1;
+    min-width: 80px;
+    height: 44px;
+    margin: 0;
+    accent-color: var(--brass);
+    cursor: pointer;
+    background: transparent;
+}
+
+.waktu-audio {
+    flex: none;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ink-primary);
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+}
+
+.tombol-audio-ulang {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    min-width: 64px;
+    padding: 8px 12px;
+    border-radius: var(--radius-control);
+    border: 1px solid var(--border-control);
+    background-color: #24211d;
+    color: var(--ink-primary);
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.tombol-audio-ulang:hover:not(:disabled) {
+    border-color: var(--brass);
+    color: var(--brass);
+}
+
+.modal-audio-galat {
+    margin-top: 8px;
+    font-size: 0.82rem;
+    color: var(--danger-ink);
+}
+
+.ikon-chip-suara {
+    flex: none;
+    width: 14px;
+    height: 14px;
+    stroke: var(--brass);
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
 #modal-info-deskripsi {
     margin: 0;
     font-size: 0.94rem;

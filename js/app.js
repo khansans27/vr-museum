@@ -438,7 +438,174 @@ function toggleAnimasiHotspot() {
     if (tur) tur.terapkanStatusAnimasi();
 }
 
+function formatDetikAudio(detik) {
+    if (!Number.isFinite(detik) || detik < 0) return '0:00';
+    const bulatkan = Math.floor(detik);
+    const menit = Math.floor(bulatkan / 60);
+    const sisa = bulatkan % 60;
+    return `${menit}:${sisa < 10 ? '0' : ''}${sisa}`;
+}
+
+function perbaruiTampilanAudio() {
+    const audio = document.getElementById('audio-koleksi');
+    const btnPutar = document.getElementById('btn-audio-putar');
+    const ikonPutar = document.getElementById('ikon-audio-putar');
+    const teksPutar = document.getElementById('teks-audio-putar');
+    const slider = document.getElementById('slider-audio');
+    const teksWaktu = document.getElementById('teks-waktu-audio');
+    const vrTeks = document.getElementById('vr-audio-teks');
+    if (!audio || !btnPutar) return;
+
+    const sedangMain = !audio.paused && !audio.ended;
+    btnPutar.setAttribute('aria-pressed', String(sedangMain));
+    ikonPutar.textContent = sedangMain ? '❚❚' : '▶';
+    teksPutar.textContent = sedangMain ? 'Jeda Suara' : 'Putar Suara';
+    if (vrTeks) {
+        vrTeks.setAttribute('value', sedangMain ? 'Jeda Suara' : 'Putar Suara');
+    }
+
+    const durasi = Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : 0;
+    const posisi = Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
+    if (durasi > 0) {
+        slider.disabled = false;
+        slider.value = String(Math.min(100, (posisi / durasi) * 100));
+        teksWaktu.textContent = `${formatDetikAudio(posisi)} / ${formatDetikAudio(durasi)}`;
+    } else {
+        slider.value = '0';
+        teksWaktu.textContent = posisi > 0 ? `${formatDetikAudio(posisi)}` : '0:00';
+    }
+}
+
+function hentikanAudioKoleksi() {
+    const audio = document.getElementById('audio-koleksi');
+    if (!audio) return;
+    audio.pause();
+    try {
+        audio.currentTime = 0;
+    } catch (_) {}
+    perbaruiTampilanAudio();
+}
+
+function siapkanAudioKoleksi(itemInfo) {
+    const wadah = document.getElementById('modal-audio-wadah');
+    const audio = document.getElementById('audio-koleksi');
+    const label = document.getElementById('modal-audio-label');
+    const status = document.getElementById('modal-audio-status');
+    const galat = document.getElementById('modal-audio-galat');
+    const btnPutar = document.getElementById('btn-audio-putar');
+    const btnUlang = document.getElementById('btn-audio-ulang');
+    const slider = document.getElementById('slider-audio');
+    if (!wadah || !audio) return;
+
+    hentikanAudioKoleksi();
+    galat.classList.add('sembunyi');
+    galat.textContent = '';
+
+    if (!itemInfo || !itemInfo.audio) {
+        wadah.classList.add('sembunyi');
+        audio.removeAttribute('src');
+        audio.load();
+        return;
+    }
+
+    wadah.classList.remove('sembunyi');
+    label.textContent = itemInfo.labelAudio
+        ? `Sampel Suara: ${itemInfo.labelAudio}`
+        : `Sampel Suara: ${itemInfo.judul}`;
+    status.textContent = 'Siap diputar';
+    btnPutar.disabled = false;
+    btnUlang.disabled = false;
+    slider.disabled = false;
+    audio.src = itemInfo.audio;
+    audio.load();
+    perbaruiTampilanAudio();
+}
+
+function togglePutarAudio() {
+    const audio = document.getElementById('audio-koleksi');
+    const status = document.getElementById('modal-audio-status');
+    const galat = document.getElementById('modal-audio-galat');
+    if (!audio || !audio.getAttribute('src')) return;
+
+    if (audio.paused || audio.ended) {
+        status.textContent = 'Memuat suara...';
+        galat.classList.add('sembunyi');
+        audio.play().then(() => {
+            status.textContent = 'Sedang memutar';
+            perbaruiTampilanAudio();
+        }).catch(() => {
+            status.textContent = 'Gagal memutar';
+            galat.textContent = 'Suara instrumen belum dapat diputar pada peramban ini.';
+            galat.classList.remove('sembunyi');
+            perbaruiTampilanAudio();
+        });
+    } else {
+        audio.pause();
+        status.textContent = 'Dijeda';
+        perbaruiTampilanAudio();
+    }
+}
+
+function ulangiAudioDariAwal() {
+    const audio = document.getElementById('audio-koleksi');
+    if (!audio || !audio.getAttribute('src')) return;
+    try {
+        audio.currentTime = 0;
+    } catch (_) {}
+    if (audio.paused) {
+        togglePutarAudio();
+    } else {
+        perbaruiTampilanAudio();
+    }
+}
+
+function geserWaktuAudio(persen) {
+    const audio = document.getElementById('audio-koleksi');
+    if (!audio || !Number.isFinite(audio.duration) || audio.duration <= 0) return;
+    audio.currentTime = (Number(persen) / 100) * audio.duration;
+    perbaruiTampilanAudio();
+}
+
+function inisialisasiEventAudio() {
+    const audio = document.getElementById('audio-koleksi');
+    if (!audio) return;
+    const status = document.getElementById('modal-audio-status');
+    const galat = document.getElementById('modal-audio-galat');
+    const btnPutar = document.getElementById('btn-audio-putar');
+    const btnUlang = document.getElementById('btn-audio-ulang');
+    const slider = document.getElementById('slider-audio');
+
+    audio.addEventListener('loadedmetadata', () => {
+        if (audio.paused) status.textContent = 'Siap diputar';
+        perbaruiTampilanAudio();
+    });
+    audio.addEventListener('timeupdate', perbaruiTampilanAudio);
+    audio.addEventListener('play', () => {
+        status.textContent = 'Sedang memutar';
+        perbaruiTampilanAudio();
+    });
+    audio.addEventListener('pause', () => {
+        if (!audio.ended && audio.currentTime > 0) status.textContent = 'Dijeda';
+        perbaruiTampilanAudio();
+    });
+    audio.addEventListener('ended', () => {
+        status.textContent = 'Selesai diputar';
+        perbaruiTampilanAudio();
+    });
+    audio.addEventListener('error', () => {
+        if (!audio.getAttribute('src')) return;
+        status.textContent = 'Berkas tidak tersedia';
+        btnPutar.disabled = true;
+        btnUlang.disabled = true;
+        slider.disabled = true;
+        galat.textContent = `Berkas audio (${audio.getAttribute('src')}) belum ditemukan di folder audio/.`;
+        galat.classList.remove('sembunyi');
+        perbaruiTampilanAudio();
+    });
+}
+
 function tutupPanelInfo() {
+    hentikanAudioKoleksi();
     const overlay = document.getElementById('modal-info-overlay');
     const sedangBuka = !overlay.classList.contains('sembunyi');
     overlay.classList.add('sembunyi');
@@ -633,6 +800,7 @@ function inisialisasiAFrame() {
     bangunShortcutLantai();
     perbaruiTombolAnimasi();
     perbaruiTombolLayarPenuh();
+    inisialisasiEventAudio();
     terapkanFovKamera(FOV_DEFAULT);
 
     if (typeof window.AFRAME === 'undefined') {
@@ -654,6 +822,7 @@ function inisialisasiAFrame() {
             this.indeksAktif = 0;
 
             document.querySelector('#vr-panel-tutup').addEventListener('click', () => this.tutupPanelVR());
+            document.querySelector('#vr-audio-latar').addEventListener('click', () => togglePutarAudio());
             this.el.addEventListener('enter-vr', () => this.aturModeVR(true));
             this.el.addEventListener('exit-vr', () => this.aturModeVR(false));
         },
@@ -1025,6 +1194,8 @@ function inisialisasiAFrame() {
                 imgFoto.removeAttribute('src');
             }
 
+            siapkanAudioKoleksi(h);
+
             document.getElementById('modal-info-overlay').classList.remove('sembunyi');
             document.getElementById('btn-tutup-modal').focus();
         },
@@ -1037,6 +1208,10 @@ function inisialisasiAFrame() {
             const latar = p.querySelector('#vr-panel-latar');
             const garis = p.querySelector('#vr-panel-garis');
             const tutup = p.querySelector('#vr-panel-tutup');
+            const vrAudio = p.querySelector('#vr-panel-audio');
+            const vrAudioLatar = p.querySelector('#vr-audio-latar');
+
+            siapkanAudioKoleksi(h);
 
             const teksJudulVR = keTeksAsciiVR(h.judul.toUpperCase());
             const teksIsiVR = keTeksAsciiVR(h.isi);
@@ -1045,10 +1220,12 @@ function inisialisasiAFrame() {
 
             const refFoto = h.foto ? await cekFotoDetail(h.foto) : null;
             const adaFoto = Boolean(refFoto);
+            const adaAudio = Boolean(h.audio);
             const jumlahBaris = hitungBarisTeks(teksIsiVR, 40);
             const tinggiTeks = 0.56 + jumlahBaris * 0.125;
             const tinggiFoto = adaFoto ? 1.28 : 0;
-            const tinggiTotal = tinggiTeks + tinggiFoto + (adaFoto ? 0.14 : 0.08);
+            const tinggiAudio = adaAudio ? 0.34 : 0;
+            const tinggiTotal = tinggiTeks + tinggiFoto + tinggiAudio + (adaFoto ? 0.14 : 0.08);
             const atas = tinggiTotal / 2;
 
             latar.setAttribute('height', tinggiTotal.toFixed(2));
@@ -1056,15 +1233,27 @@ function inisialisasiAFrame() {
             tutup.object3D.position.set(1.24, atas - 0.17, 0.025);
             judul.object3D.position.set(-1.24, atas - 0.14, 0.015);
 
+            let yKursor = atas - 0.44;
             if (adaFoto) {
                 fotoEl.setAttribute('src', refFoto);
                 fotoEl.setAttribute('visible', true);
-                fotoEl.object3D.position.set(0, atas - 0.44 - 0.62, 0.015);
-                isi.object3D.position.set(-1.24, atas - 0.44 - 1.32, 0.015);
+                fotoEl.object3D.position.set(0, yKursor - 0.62, 0.015);
+                yKursor -= 1.32;
             } else {
                 fotoEl.setAttribute('visible', false);
-                isi.object3D.position.set(-1.24, atas - 0.44, 0.015);
             }
+
+            if (adaAudio) {
+                vrAudio.setAttribute('visible', true);
+                vrAudio.object3D.position.set(-0.65, yKursor - 0.12, 0.018);
+                vrAudioLatar.classList.add('clickable');
+                yKursor -= 0.34;
+            } else {
+                vrAudio.setAttribute('visible', false);
+                vrAudioLatar.classList.remove('clickable');
+            }
+
+            isi.object3D.position.set(-1.24, yKursor, 0.015);
 
             const elevasi = THREE.MathUtils.clamp(h.e, -10, 18);
             const pos = arahDari(h.g, elevasi, JARAK_PANEL_VR).add(new THREE.Vector3(0, 1.6, 0));
@@ -1076,8 +1265,10 @@ function inisialisasiAFrame() {
         },
 
         tutupPanelVR() {
+            hentikanAudioKoleksi();
             this.panelVR.setAttribute('visible', false);
             this.panelVR.querySelector('#vr-panel-tutup').classList.remove('clickable');
+            this.panelVR.querySelector('#vr-audio-latar').classList.remove('clickable');
             this.segarkanRaycaster();
         },
 
@@ -1118,6 +1309,16 @@ function inisialisasiAFrame() {
 
                     btnChip.appendChild(lencanaI);
                     btnChip.appendChild(teksChip);
+                    if (itemInfo.audio) {
+                        const svgNs = 'http://www.w3.org/2000/svg';
+                        const ikonSuara = document.createElementNS(svgNs, 'svg');
+                        ikonSuara.setAttribute('viewBox', '0 0 24 24');
+                        ikonSuara.setAttribute('class', 'ikon-chip-suara');
+                        ikonSuara.setAttribute('aria-hidden', 'true');
+                        ikonSuara.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>';
+                        btnChip.appendChild(ikonSuara);
+                        btnChip.setAttribute('aria-label', `${itemInfo.judul} (dilengkapi sampel suara instrumen)`);
+                    }
                     btnChip.onclick = () => {
                         this.arahkanKameraKe(itemInfo.g, itemInfo.e);
                         this.bukaPanelInfo(itemInfo, lantai, titik);

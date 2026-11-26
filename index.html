@@ -220,6 +220,28 @@
                     <div id="modal-foto-fallback" class="modal-foto-fallback sembunyi"></div>
                     <div id="modal-foto-caption" class="modal-foto-caption"></div>
                 </div>
+                <div id="modal-audio-wadah" class="modal-audio-wadah sembunyi">
+                    <div class="modal-audio-kepala">
+                        <span class="modal-audio-judul" id="modal-audio-label">Sampel Suara Instrumen</span>
+                        <span class="modal-audio-status" id="modal-audio-status" role="status" aria-live="polite">Siap diputar</span>
+                    </div>
+                    <div class="modal-audio-kontrol">
+                        <button type="button" id="btn-audio-putar" class="tombol-audio-utama" aria-pressed="false"
+                            onclick="togglePutarAudio()">
+                            <span id="ikon-audio-putar" aria-hidden="true">▶</span>
+                            <span id="teks-audio-putar">Putar Suara</span>
+                        </button>
+                        <div class="modal-audio-geser-wrap">
+                            <input type="range" id="slider-audio" class="slider-audio" min="0" max="100" step="0.1" value="0"
+                                oninput="geserWaktuAudio(this.value)">
+                            <label for="slider-audio" id="teks-waktu-audio" class="waktu-audio">0:00 / 0:00</label>
+                        </div>
+                        <button type="button" id="btn-audio-ulang" class="tombol-audio-ulang"
+                            onclick="ulangiAudioDariAwal()" aria-label="Ulangi suara instrumen dari awal">Ulang</button>
+                    </div>
+                    <div id="modal-audio-galat" class="modal-audio-galat sembunyi" role="alert"></div>
+                    <audio id="audio-koleksi" preload="none"></audio>
+                </div>
                 <p id="modal-info-deskripsi"></p>
             </div>
         </div>
@@ -255,6 +277,12 @@
                 baseline="top" font="roboto"></a-text>
             <a-text id="vr-panel-isi" value="" color="#f5f0e6" width="2.35" wrap-count="40" anchor="left"
                 baseline="top" line-height="54" font="roboto"></a-text>
+            <a-entity id="vr-panel-audio" visible="false">
+                <a-plane id="vr-audio-latar" width="1.18" height="0.24" color="#24211d" material="shader: flat"></a-plane>
+                <a-plane width="1.20" height="0.26" position="0 0 -0.002" color="#e2b144" material="shader: flat"></a-plane>
+                <a-text id="vr-audio-teks" value="Putar Suara" align="center" color="#f5f0e6" width="2.1"
+                    position="0 0.005 0.015" font="roboto"></a-text>
+            </a-entity>
             <a-entity id="vr-panel-tutup" geometry="primitive: circle; radius: 0.12"
                 material="color: #b91c1c; shader: flat">
                 <a-text value="X" align="center" color="#ffffff" width="1.9" position="0 0.01 0.01"></a-text>
