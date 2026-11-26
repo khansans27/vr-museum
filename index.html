@@ -1,0 +1,2438 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Museum Musik Dunia 360°: Tur Virtual Web VR</title>
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js" defer></script>
+
+    <style>
+        :root {
+            --bg-ground: #121110;
+            --bg-surface: #1c1a17;
+            --bg-surface-strong: rgba(24, 22, 19, 0.94);
+            --border-subtle: #443e37;
+            --border-control: #857b6e;
+            --ink-primary: #f5f0e6;
+            --ink-secondary: #c9c0b1;
+            --brass: #e2b144;
+            --brass-hover: #f0c35b;
+            --info-blue: #1d4ed8;
+            --info-blue-soft: #93c5fd;
+            --danger-bg: #b91c1c;
+            --danger-ink: #fca5a5;
+            --font-display: Georgia, "Times New Roman", serif;
+            --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            --radius-plaque: 2px;
+            --radius-control: 6px;
+            --radius-panel: 10px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: var(--font-ui);
+            background-color: var(--bg-ground);
+            color: var(--ink-primary);
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        button,
+        a[href],
+        [role="button"] {
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        button:disabled {
+            cursor: not-allowed;
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--brass);
+            outline-offset: 2px;
+        }
+
+        .sembunyi {
+            display: none !important;
+        }
+
+        /* Pastikan tombol VR bawaan A-Frame hanya muncul saat mode 360 aktif dan memenuhi target 44px */
+        body:not(.mode-360-aktif) .a-enter-vr {
+            display: none !important;
+        }
+
+        .a-enter-vr-button {
+            min-width: 56px !important;
+            min-height: 44px !important;
+        }
+
+        /* Layar antarmuka penuh di atas kanvas A-Frame */
+        .layar-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            width: 100%;
+            min-height: 100dvh;
+            height: 100dvh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background-color: var(--bg-ground);
+        }
+
+        /* Indikator pemuatan on-demand dan status galat */
+        #indikator-muat,
+        #layar-galat {
+            position: fixed;
+            inset: 0;
+            z-index: 90;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            padding: 24px;
+            text-align: center;
+            background-color: rgba(18, 17, 16, 0.94);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid #443e37;
+            border-top-color: var(--brass);
+            animation: putar 0.85s linear infinite;
+        }
+
+        @keyframes putar {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .teks-muat {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--ink-primary);
+            max-width: 420px;
+        }
+
+        /* Frame 1: Layar pembuka editorial asimetris */
+        .pembuka-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            min-height: 100dvh;
+            width: 100%;
+        }
+
+        .pembuka-visual {
+            position: relative;
+            min-height: 240px;
+            max-height: 42dvh;
+            overflow: hidden;
+            background-color: #191714;
+            border-bottom: 2px solid var(--brass);
+        }
+
+        .pembuka-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 46%;
+            display: block;
+        }
+
+        .pembuka-visual-scrim {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(18, 17, 16, 0.15) 0%, rgba(18, 17, 16, 0.88) 100%);
+            display: flex;
+            align-items: flex-end;
+            padding: 18px 20px;
+        }
+
+        .keterangan-foto {
+            font-size: 0.84rem;
+            color: var(--ink-primary);
+            background-color: rgba(18, 17, 16, 0.86);
+            border-left: 2px solid var(--brass);
+            padding: 6px 10px;
+            max-width: 100%;
+        }
+
+        .pembuka-konten {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 28px 20px 36px;
+            max-width: 620px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .plakat-logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 124px;
+            height: 52px;
+            border: 1px dashed var(--brass);
+            border-radius: var(--radius-plaque);
+            color: var(--brass);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            margin-bottom: 22px;
+            background-color: var(--bg-surface);
+        }
+
+        .judul-utama {
+            font-family: var(--font-display);
+            font-size: clamp(1.9rem, 3.6vw, 3.1rem);
+            line-height: 1.15;
+            font-weight: 700;
+            margin: 0 0 14px;
+            color: var(--ink-primary);
+        }
+
+        .subjudul {
+            margin: 0 0 24px;
+            font-size: clamp(0.95rem, 1.4vw, 1.05rem);
+            line-height: 1.65;
+            color: var(--ink-secondary);
+        }
+
+        .ringkas-rute {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin: 0 0 28px;
+            padding: 14px 0;
+            border-top: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .ringkas-rute div {
+            min-width: 0;
+        }
+
+        .ringkas-rute dt {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--brass);
+            margin-bottom: 3px;
+        }
+
+        .ringkas-rute dd {
+            margin: 0;
+            font-size: 0.86rem;
+            color: var(--ink-primary);
+        }
+
+        .baris-tombol {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .tombol-utama {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 46px;
+            padding: 11px 26px;
+            border: 1px solid var(--brass);
+            border-radius: var(--radius-control);
+            background-color: var(--brass);
+            color: #121110;
+            font-size: 0.96rem;
+            font-weight: 700;
+            transition: background-color 0.16s ease, transform 0.12s ease;
+        }
+
+        .tombol-utama:hover {
+            background-color: var(--brass-hover);
+        }
+
+        .tombol-utama:active {
+            transform: translateY(1px);
+        }
+
+        .tombol-sekunder {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 46px;
+            padding: 11px 20px;
+            border: 1px solid var(--border-control);
+            border-radius: var(--radius-control);
+            background-color: var(--bg-surface);
+            color: var(--ink-primary);
+            font-size: 0.92rem;
+            font-weight: 600;
+            transition: border-color 0.16s ease, color 0.16s ease, background-color 0.16s ease;
+        }
+
+        .tombol-sekunder:hover {
+            border-color: var(--brass);
+            color: var(--brass);
+            background-color: #24211d;
+        }
+
+        .tombol-sekunder:active {
+            background-color: #2b2722;
+        }
+
+        /* Frame 2: Katalog 3 lantai dengan hierarki terstruktur */
+        .bungkus-katalog {
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 28px 18px 40px;
+        }
+
+        .header-katalog {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 16px;
+            padding-bottom: 18px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .header-katalog h2 {
+            font-family: var(--font-display);
+            font-size: clamp(1.5rem, 2.8vw, 2.15rem);
+            margin: 0 0 6px;
+            color: var(--ink-primary);
+        }
+
+        .header-katalog p {
+            margin: 0;
+            font-size: 0.94rem;
+            color: var(--ink-secondary);
+            max-width: 560px;
+        }
+
+        .grid-lantai {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 18px;
+        }
+
+        .kartu-lantai {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            padding: 0;
+            text-align: left;
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-top: 3px solid var(--brass);
+            border-radius: var(--radius-panel);
+            overflow: hidden;
+            color: var(--ink-primary);
+            transition: border-color 0.18s ease, transform 0.16s ease;
+        }
+
+        .kartu-lantai:hover {
+            border-color: var(--brass);
+            transform: translateY(-2px);
+        }
+
+        .kartu-lantai:active {
+            transform: translateY(0);
+        }
+
+        .pratinjau-lantai {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background-color: #191714;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .pratinjau-lantai img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .pratinjau-fallback {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 16px;
+            text-align: center;
+            background-color: #1e1b17;
+            color: var(--ink-primary);
+        }
+
+        .pratinjau-fallback span {
+            font-size: 0.82rem;
+            color: var(--ink-secondary);
+        }
+
+        .badge-jumlah {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 4px 10px;
+            border-radius: var(--radius-plaque);
+            background-color: rgba(18, 17, 16, 0.92);
+            border: 1px solid var(--brass);
+            color: var(--brass);
+            font-size: 0.78rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .isi-kartu {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            padding: 18px 20px 20px;
+        }
+
+        .baris-label-lantai {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .lencana-lantai {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--brass);
+            padding: 3px 8px;
+            border: 1px solid var(--border-control);
+            border-radius: var(--radius-plaque);
+            background-color: #151311;
+        }
+
+        .status-urutan {
+            font-size: 0.8rem;
+            color: var(--ink-secondary);
+        }
+
+        .isi-kartu h3 {
+            font-family: var(--font-display);
+            font-size: 1.18rem;
+            line-height: 1.35;
+            margin: 0 0 8px;
+            color: var(--ink-primary);
+        }
+
+        .isi-kartu p {
+            margin: 0 0 16px;
+            font-size: 0.9rem;
+            line-height: 1.58;
+            color: var(--ink-secondary);
+            flex: 1;
+        }
+
+        .aksi-kartu {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--brass);
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+
+        /* Frame 6: Layar penutup */
+        .bungkus-selesai {
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 28px 18px;
+        }
+
+        .kartu-selesai {
+            width: 100%;
+            max-width: 560px;
+            padding: 30px 24px;
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-top: 3px solid var(--brass);
+            border-radius: var(--radius-panel);
+        }
+
+        .kartu-selesai h2 {
+            font-family: var(--font-display);
+            font-size: clamp(1.5rem, 3vw, 2.1rem);
+            margin: 0 0 12px;
+        }
+
+        .kartu-selesai p {
+            margin: 0 0 24px;
+            font-size: 0.96rem;
+            line-height: 1.65;
+            color: var(--ink-secondary);
+        }
+
+        /* HUD 2D saat berada dalam tampilan panorama 360 */
+        .hud {
+            position: fixed;
+            z-index: 20;
+            pointer-events: auto;
+        }
+
+        .panel-hud {
+            background-color: var(--bg-surface-strong);
+            border: 1px solid var(--border-subtle);
+            border-top: 2px solid var(--brass);
+            border-radius: var(--radius-panel);
+        }
+
+        #hud-lokasi {
+            top: 12px;
+            left: 12px;
+            width: min(392px, calc(100vw - 24px));
+            padding: 12px 14px;
+        }
+
+        .baris-meta-atas {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        #hud-lantai {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--brass);
+        }
+
+        .status-placeholder {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #121110;
+            background-color: var(--brass);
+            padding: 2px 7px;
+            border-radius: var(--radius-plaque);
+        }
+
+        #hud-nama {
+            font-family: var(--font-display);
+            margin: 0 0 4px;
+            font-size: 1.05rem;
+            line-height: 1.3;
+            color: var(--ink-primary);
+        }
+
+        #hud-deskripsi {
+            margin: 0;
+            font-size: 0.84rem;
+            line-height: 1.45;
+            color: var(--ink-secondary);
+        }
+
+        .baris-progres {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--border-subtle);
+            font-size: 0.8rem;
+            color: var(--ink-secondary);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .baris-progres strong {
+            color: var(--ink-primary);
+        }
+
+        .kontrol-langkah {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .tombol-langkah {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            padding: 8px 10px;
+            border-radius: var(--radius-control);
+            border: 1px solid var(--border-control);
+            background-color: #24211d;
+            color: var(--ink-primary);
+            font-size: 0.86rem;
+            font-weight: 700;
+            transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+        }
+
+        .tombol-langkah:hover:not(:disabled) {
+            background-color: var(--brass);
+            color: #121110;
+            border-color: var(--brass);
+        }
+
+        .tombol-langkah:active:not(:disabled) {
+            background-color: var(--brass-hover);
+            color: #121110;
+        }
+
+        .tombol-langkah:disabled {
+            opacity: 0.42;
+            background-color: #181613;
+            border-color: #36312b;
+            color: var(--ink-secondary);
+        }
+
+        #hud-kanan {
+            top: 12px;
+            right: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .baris-aksi-atas {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .tombol-hud {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            padding: 8px 13px;
+            border-radius: var(--radius-control);
+            border: 1px solid var(--border-control);
+            background-color: var(--bg-surface-strong);
+            color: var(--ink-primary);
+            font-size: 0.85rem;
+            font-weight: 700;
+            transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+        }
+
+        .tombol-hud:hover {
+            border-color: var(--brass);
+            color: var(--brass);
+        }
+
+        .tombol-hud:active {
+            background-color: #272420;
+        }
+
+        .tombol-hud-selesai {
+            border-color: #dc2626;
+            background-color: #261414;
+            color: var(--danger-ink);
+        }
+
+        .tombol-hud-selesai:hover {
+            background-color: var(--danger-bg);
+            border-color: var(--danger-bg);
+            color: #ffffff;
+        }
+
+        #hud-petunjuk {
+            padding: 10px 12px;
+            font-size: 0.8rem;
+            line-height: 1.55;
+            color: var(--ink-secondary);
+            max-width: 268px;
+        }
+
+        #hud-petunjuk strong {
+            color: var(--ink-primary);
+        }
+
+        #hud-petunjuk .aksen-biru {
+            color: var(--info-blue-soft);
+            font-weight: 700;
+        }
+
+        /* Satu-satunya elemen kaca buram (R-10) agar panorama tetap terasa di tepi bawah */
+        #hud-navigasi {
+            bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 8px;
+            max-width: calc(100vw - 108px);
+            overflow-x: auto;
+            background-color: rgba(20, 18, 16, 0.84);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-panel);
+        }
+
+        #hud-navigasi button {
+            flex: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            min-height: 44px;
+            padding: 8px 14px;
+            border: 1px solid var(--border-control);
+            border-radius: var(--radius-control);
+            background-color: #1f1c19;
+            color: var(--ink-primary);
+            font-size: 0.86rem;
+            font-weight: 700;
+            transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+        }
+
+        #hud-navigasi button:hover {
+            border-color: var(--brass);
+            color: var(--brass);
+        }
+
+        #hud-navigasi button.aktif {
+            background-color: var(--brass);
+            border-color: var(--brass);
+            color: #121110;
+        }
+
+        #hud-navigasi button .label-sub {
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+
+        #hud-kalibrasi {
+            bottom: calc(74px + env(safe-area-inset-bottom, 0px));
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            color: var(--brass);
+            pointer-events: none;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Frame 5: Panel informasi koleksi (dialog 2D untuk desktop & seluler) */
+        #modal-info-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 70;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            background-color: rgba(10, 9, 8, 0.82);
+        }
+
+        .modal-info-kartu {
+            width: min(560px, 100%);
+            max-height: 88dvh;
+            overflow-y: auto;
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-control);
+            border-top: 3px solid var(--brass);
+            border-radius: var(--radius-panel);
+            box-shadow: 0 20px 48px rgba(0, 0, 0, 0.65);
+            text-align: left;
+        }
+
+        .modal-info-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 16px 18px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .modal-info-judul-wrap {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .ikon-info-bulat {
+            flex: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background-color: var(--info-blue);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.05rem;
+            font-style: italic;
+        }
+
+        .modal-info-header h2 {
+            font-family: var(--font-display);
+            margin: 0;
+            font-size: 1.15rem;
+            line-height: 1.3;
+            color: var(--ink-primary);
+        }
+
+        .modal-info-sub {
+            font-size: 0.82rem;
+            color: var(--brass);
+            margin-top: 4px;
+        }
+
+        .tombol-tutup-modal {
+            flex: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid var(--danger-bg);
+            background-color: var(--danger-bg);
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tombol-tutup-modal:hover {
+            background-color: #991b1b;
+        }
+
+        .modal-info-isi {
+            padding: 16px 18px 20px;
+        }
+
+        .modal-foto-wadah {
+            margin-bottom: 14px;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-control);
+            overflow: hidden;
+            background-color: #141210;
+        }
+
+        .modal-foto-wadah img {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 4 / 3;
+            max-height: 300px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .modal-foto-fallback {
+            padding: 20px 14px;
+            text-align: center;
+            font-size: 0.86rem;
+            color: var(--ink-secondary);
+        }
+
+        .modal-foto-caption {
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            color: var(--ink-secondary);
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        #modal-info-deskripsi {
+            margin: 0;
+            font-size: 0.94rem;
+            line-height: 1.68;
+            color: var(--ink-primary);
+            white-space: pre-line;
+        }
+
+        /* Keadaan kosong eksplisit jika lantai tidak memiliki titik */
+        .status-kosong {
+            padding: 28px 20px;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-panel);
+            background-color: var(--bg-surface);
+            text-align: center;
+        }
+
+        /* Breakpoint 2: Tablet (640px - 1023px) */
+        @media (min-width: 640px) {
+            .pembuka-visual {
+                max-height: 46dvh;
+            }
+
+            .pembuka-konten {
+                padding: 34px 28px 44px;
+            }
+
+            .grid-lantai {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 20px;
+            }
+
+            .kartu-lantai.kartu-utama {
+                grid-column: 1 / -1;
+                flex-direction: row;
+            }
+
+            .kartu-lantai.kartu-utama .pratinjau-lantai {
+                width: 48%;
+                aspect-ratio: auto;
+                min-height: 240px;
+                border-bottom: none;
+                border-right: 1px solid var(--border-subtle);
+            }
+        }
+
+        /* Breakpoint 3: Desktop (>= 1024px) */
+        @media (min-width: 1024px) {
+            .pembuka-grid {
+                grid-template-columns: 1.15fr 0.85fr;
+            }
+
+            .pembuka-visual {
+                max-height: none;
+                height: 100dvh;
+                border-bottom: none;
+                border-right: 2px solid var(--brass);
+            }
+
+            .pembuka-konten {
+                padding: 48px 52px;
+                margin: 0;
+            }
+
+            .bungkus-katalog {
+                padding: 40px 28px 52px;
+            }
+
+            .kartu-lantai.kartu-utama .pratinjau-lantai {
+                width: 52%;
+                min-height: 270px;
+            }
+        }
+
+        /* Tata letak HUD terancang khusus untuk layar seluler (< 768px) */
+        @media (max-width: 767px) {
+            #hud-lokasi {
+                top: 10px;
+                left: 10px;
+                width: calc(100vw - 20px);
+                padding: 10px 12px;
+            }
+
+            #hud-deskripsi,
+            #hud-petunjuk {
+                display: none;
+            }
+
+            #hud-kanan {
+                top: auto;
+                bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+                right: 10px;
+            }
+
+            .tombol-hud {
+                padding: 8px 11px;
+                font-size: 0.8rem;
+            }
+
+            #hud-navigasi {
+                left: 10px;
+                transform: none;
+                max-width: calc(100vw - 88px);
+                gap: 6px;
+                padding: 5px 6px;
+            }
+
+            #hud-navigasi button {
+                padding: 8px 11px;
+                font-size: 0.82rem;
+            }
+
+            #hud-navigasi button .label-sub {
+                display: none;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="indikator-muat" class="sembunyi" role="status" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
+        <div class="teks-muat" id="teks-muat">Memuat panorama 360°...</div>
+    </div>
+
+    <div id="layar-galat" class="sembunyi" role="alert">
+        <h2 style="font-family: var(--font-display); margin: 0;">Gagal Memuat Mesin Web VR</h2>
+        <p id="pesan-galat" style="margin: 0; color: var(--ink-secondary); max-width: 440px;">
+            Pustaka A-Frame 1.6.0 belum dapat dimuat. Periksa koneksi internet Anda lalu muat ulang halaman ini.
+        </p>
+        <button type="button" class="tombol-utama" onclick="location.reload()">Muat Ulang Halaman</button>
+    </div>
+
+    <main id="wadah-antarmuka">
+        <!-- Frame 1: Layar pembuka -->
+        <section id="layar-pembuka" class="layar-overlay" aria-labelledby="judul-pembuka">
+            <div class="pembuka-grid">
+                <div class="pembuka-visual">
+                    <img id="hero-museum" src="img/GS__2316.JPG" width="1600" height="800" fetchpriority="high"
+                        alt="Halaman utama dan pintu masuk Museum Musik Dunia"
+                        onerror="this.style.display='none';">
+                    <div class="pembuka-visual-scrim">
+                        <div class="keterangan-foto">
+                            Pintu Masuk Utama Lantai 1 (GS__2316.JPG), titik awal tur berurutan hingga Lantai 3
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pembuka-konten">
+                    <header>
+                        <div class="plakat-logo" aria-label="Placeholder logo museum">[LOGO MUSEUM]</div>
+                        <h1 id="judul-pembuka" class="judul-utama">Museum Musik Dunia 360°</h1>
+                    </header>
+
+                    <p class="subjudul">
+                        Ikuti jalur tur virtual 360° berurutan langkah demi langkah mulai dari gerbang utama Lantai 1
+                        (galeri alat musik dunia dan Drum Set Terry Bozzio), naik ke Lantai 2 (Sejarah Keroncong,
+                        musisi Nusantara, The Beatles, dan panggung Jazz), hingga ruang konser Piano Klasik di Lantai 3.
+                    </p>
+
+                    <dl class="ringkas-rute">
+                        <div>
+                            <dt>Lantai 1</dt>
+                            <dd>12 titik masuk</dd>
+                        </div>
+                        <div>
+                            <dt>Lantai 2</dt>
+                            <dd>10 titik galeri</dd>
+                        </div>
+                        <div>
+                            <dt>Lantai 3</dt>
+                            <dd>4 titik klasik</dd>
+                        </div>
+                    </dl>
+
+                    <div class="baris-tombol">
+                        <button type="button" class="tombol-utama" onclick="bukaMenuZona()">Mulai Tur</button>
+                        <button type="button" class="tombol-sekunder" onclick="mulaiDariLantai('lt1', 0)">
+                            Masuk Pintu Utama (Lt. 1)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Frame 2: Menu zona / lantai -->
+        <section id="layar-zona" class="layar-overlay sembunyi" aria-labelledby="judul-zona">
+            <div class="bungkus-katalog">
+                <header class="header-katalog">
+                    <div>
+                        <h2 id="judul-zona">Pilih Lantai Museum</h2>
+                        <p>
+                            Urutan foto tersusun berantai dari Pintu Masuk Lantai 1 hingga akhir Lantai 3.
+                            Pilih lantai untuk langsung masuk ke panorama 360°.
+                        </p>
+                    </div>
+                    <button type="button" class="tombol-sekunder" onclick="kembaliKeAwal()">Kembali ke Awal</button>
+                </header>
+
+                <div id="daftar-zona" class="grid-lantai"></div>
+            </div>
+        </section>
+
+        <!-- Frame 6: Layar selesai -->
+        <section id="layar-selesai" class="layar-overlay sembunyi" aria-labelledby="judul-selesai">
+            <div class="bungkus-selesai">
+                <div class="kartu-selesai">
+                    <div class="plakat-logo" style="border-style: solid; margin-bottom: 18px;">TUR SELESAI</div>
+                    <h2 id="judul-selesai">Terima Kasih Telah Berkunjung</h2>
+                    <p>
+                        Kunjungan virtual 360° di Museum Musik Dunia telah selesai. Anda dapat memilih lantai lain
+                        untuk meninjau koleksi tertentu atau kembali ke layar pembuka.
+                    </p>
+                    <footer class="baris-tombol">
+                        <button type="button" class="tombol-utama" onclick="bukaMenuZona()">Ganti Lantai / Menu</button>
+                        <button type="button" class="tombol-sekunder" onclick="kembaliKeAwal()">Kembali ke Awal</button>
+                    </footer>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- HUD kiri atas: informasi titik aktif dan kontrol cepat mundur/maju -->
+    <aside id="hud-lokasi" class="hud panel-hud sembunyi" aria-label="Informasi lokasi panorama aktif">
+        <div class="baris-meta-atas">
+            <span id="hud-lantai">Lantai 1</span>
+            <span class="status-placeholder sembunyi" id="hud-mode-placeholder">Mode Placeholder</span>
+        </div>
+        <h2 id="hud-nama">-</h2>
+        <p id="hud-deskripsi">-</p>
+        <div class="baris-progres">
+            <span id="hud-urutan">Titik <strong>1</strong> / <strong>12</strong></span>
+            <span id="hud-langkah-total">Langkah 1 / 26</span>
+        </div>
+        <div class="kontrol-langkah">
+            <button type="button" id="btn-mundur" class="tombol-langkah" onclick="navigasiLangkah(-1)">◀ Mundur</button>
+            <button type="button" id="btn-maju" class="tombol-langkah" onclick="navigasiLangkah(1)">Maju ▶</button>
+        </div>
+    </aside>
+
+    <!-- HUD kanan atas: menu zona, jeda animasi, selesai, dan petunjuk -->
+    <div id="hud-kanan" class="hud sembunyi">
+        <div class="baris-aksi-atas">
+            <button type="button" class="tombol-hud" onclick="bukaMenuZona()">☰ Menu Zona</button>
+            <button type="button" id="btn-animasi" class="tombol-hud" aria-pressed="false"
+                onclick="toggleAnimasiHotspot()">Jeda Animasi</button>
+            <button type="button" class="tombol-hud tombol-hud-selesai" onclick="selesaikanTur()">Selesai</button>
+        </div>
+        <div id="hud-petunjuk" class="panel-hud">
+            Geser layar atau gerakkan ponsel untuk melihat 360°.<br>
+            Klik <strong>panah emas</strong> untuk maju atau mundur berurutan.<br>
+            Klik ikon <span class="aksen-biru">i (biru)</span> untuk membuka info koleksi.
+        </div>
+    </div>
+
+    <!-- Bilah shortcut lantai instan -->
+    <nav id="hud-navigasi" class="hud sembunyi" aria-label="Shortcut lantai museum"></nav>
+
+    <!-- Pembaca sudut kalibrasi opsional (tekan tombol K di keyboard) -->
+    <div id="hud-kalibrasi" class="hud panel-hud sembunyi" aria-live="off">Azimuth g: 180° | Elevasi e: 0°</div>
+
+    <!-- Frame 5: Dialog informasi koleksi (mode desktop dan seluler) -->
+    <div id="modal-info-overlay" class="sembunyi" onclick="jikaKlikLatarModal(event)">
+        <div class="modal-info-kartu" role="dialog" aria-modal="true" aria-labelledby="modal-info-judul">
+            <div class="modal-info-header">
+                <div class="modal-info-judul-wrap">
+                    <div class="ikon-info-bulat" aria-hidden="true">i</div>
+                    <div>
+                        <h2 id="modal-info-judul">Judul Koleksi</h2>
+                        <div class="modal-info-sub" id="modal-info-lokasi">Museum Musik Dunia</div>
+                    </div>
+                </div>
+                <button type="button" id="btn-tutup-modal" class="tombol-tutup-modal" onclick="tutupPanelInfo()"
+                    aria-label="Tutup panel informasi">X</button>
+            </div>
+            <div class="modal-info-isi">
+                <div id="modal-foto-wadah" class="modal-foto-wadah sembunyi">
+                    <img id="modal-info-foto" src="" width="800" height="600" alt="Foto detail koleksi museum">
+                    <div id="modal-foto-fallback" class="modal-foto-fallback sembunyi"></div>
+                    <div id="modal-foto-caption" class="modal-foto-caption"></div>
+                </div>
+                <p id="modal-info-deskripsi"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Adegan 3D Web VR A-Frame 1.6.0 -->
+    <a-scene id="adegan-vr" cursor="rayOrigin: mouse" raycaster="objects: .clickable"
+        renderer="colorManagement: true; antialias: true" vr-mode-ui="enabled: true" loading-screen="enabled: false">
+
+        <a-assets id="wadah-aset"></a-assets>
+        <a-sky id="langit" rotation="0 0 0" material="shader: flat; color: #ffffff"></a-sky>
+        <a-entity id="wadah-hotspot" position="0 1.6 0"></a-entity>
+
+        <!-- Panel informasi 3D khusus saat berada di mode VR Headset/Cardboard -->
+        <a-entity id="panel-info-vr" visible="false">
+            <a-plane id="vr-panel-latar" width="2.8" height="1.7" color="#181613" opacity="0.96"
+                material="shader: flat; transparent: true"></a-plane>
+            <a-plane id="vr-panel-garis" width="2.8" height="0.045" color="#e2b144" material="shader: flat"></a-plane>
+            <a-image id="vr-panel-foto" width="2.3" height="1.25" visible="false" material="shader: flat"></a-image>
+            <a-text id="vr-panel-judul" value="" color="#e2b144" width="2.35" wrap-count="28" anchor="left"
+                baseline="top" font="roboto"></a-text>
+            <a-text id="vr-panel-isi" value="" color="#f5f0e6" width="2.35" wrap-count="40" anchor="left"
+                baseline="top" line-height="54" font="roboto"></a-text>
+            <a-entity id="vr-panel-tutup" geometry="primitive: circle; radius: 0.12"
+                material="color: #b91c1c; shader: flat">
+                <a-text value="X" align="center" color="#ffffff" width="1.9" position="0 0.01 0.01"></a-text>
+            </a-entity>
+        </a-entity>
+
+        <a-entity id="rig">
+            <a-camera id="kamera"
+                look-controls="reverseMouseDrag: true; magicWindowTrackingEnabled: true; touchEnabled: true"
+                wasd-controls="enabled: false">
+                <a-entity id="kursor-tatap" position="0 0 -1" visible="false"
+                    geometry="primitive: ring; radiusInner: 0.014; radiusOuter: 0.023"
+                    material="color: #e2b144; shader: flat"
+                    cursor="fuse: true; fuseTimeout: 1400"
+                    raycaster="objects: .clickable; enabled: false"
+                    animation__fusing="property: scale; startEvents: fusing; from: 1 1 1; to: 0.28 0.28 0.28; dur: 1400; easing: linear"
+                    animation__batal="property: scale; startEvents: mouseleave; to: 1 1 1; dur: 160; easing: easeOutQuad"
+                    animation__klik="property: scale; startEvents: click; to: 1 1 1; dur: 120">
+                </a-entity>
+            </a-camera>
+
+            <a-entity id="laser-kanan" laser-controls="hand: right" raycaster="objects: .clickable; far: 25"></a-entity>
+            <a-entity id="laser-kiri" laser-controls="hand: left" raycaster="objects: .clickable; far: 25"></a-entity>
+        </a-entity>
+
+    </a-scene>
+
+    <script>
+        // Urutan berantai 26 titik unik tanpa foto duplikat, dari pintu masuk Lantai 1 (GS__2316.JPG) hingga Lantai 3 (GS__2225.JPG).
+        // Hanya file GS__*.JPG yang diizinkan masuk ke tekstur 360 derajat <a-sky>.
+        const DATA_LANTAI = [
+            {
+                id: 'lt1',
+                singkat: 'Lt. 1',
+                lencana: 'Lantai 1',
+                subSingkat: 'Pintu Masuk & Dunia',
+                judul: 'Halaman Utama, Galeri Musik Dunia & Drum Set Terry Bozzio',
+                deskripsi: 'Mulai dari gerbang utama Museum Musik Dunia (GS__2316.JPG), melintasi galeri gamelan Nusantara, koleksi Asia, dinding Musical Instruments, zona Eropa, Timur Tengah, India, instalasi Drum Set Terry Bozzio, hingga pohon gitar.',
+                warnaFallback: '#2c2219',
+                thumbnail: 'img/GP__2315.JPG',
+                fallbackThumbnail: 'img/GS__2316.JPG',
+                utama: true,
+                titik: [
+                    {
+                        file: 'GS__2316.JPG',
+                        nama: 'Pintu Masuk Utama Lantai 1',
+                        desk: 'Halaman utama Museum Musik Dunia dengan loket dan akses masuk langsung ke galeri Lantai 1.',
+                        hadap: 180, gMaju: 180, eMaju: -6, gMundur: null, eMundur: -6,
+                        info: [
+                            {
+                                g: 148, e: 8,
+                                judul: 'History of Recording (1857-1991)',
+                                isi: "Linimasa evolusi media perekaman suara di area masuk museum:\n- 1857, Phonautograph: perangkat paling awal perekam gelombang suara di kertas berasap.\n- 1870, Cylinder Phonograph: silinder fonograf untuk merekam dan memutar ulang suara.\n- 1900, Gramophone: piringan hitam datar yang memopulerkan distribusi rekaman massal.\n- 1963, Cassette: pita magnetik ringkas untuk pemutar portabel.\n- 1980, Compact Disc (CD): audio digital optik dengan kejernihan tinggi hingga era 1990-an.",
+                                foto: 'img/GP__2317.JPG'
+                            }
+                        ]
+                    },
+                    {
+                        file: 'GS__2312.JPG',
+                        nama: 'Galeri Gamelan & Perkusi Nusantara',
+                        desk: 'Deretan instrumen gamelan Indonesia dan panggung perkusi bundar di awal galeri Lantai 1.',
+                        hadap: 245, gMaju: 255, eMaju: -6, gMundur: 20, eMundur: -6
+                    },
+                    {
+                        file: 'GS__2311.JPG',
+                        nama: 'Koridor Instrumen Tradisional Indonesia',
+                        desk: 'Lorong lantai kayu yang memamerkan keragaman alat musik daerah Indonesia.',
+                        hadap: 255, gMaju: 262, eMaju: -6, gMundur: 95, eMundur: -7
+                    },
+                    {
+                        file: 'GS__2310.JPG',
+                        nama: 'Zona Instrumen Asia & Nusantara',
+                        desk: 'Pertemuan koleksi alat musik China di sisi kiri dan panggung instrumen Nusantara.',
+                        hadap: 280, gMaju: 308, eMaju: -6, gMundur: 200, eMundur: -6
+                    },
+                    {
+                        file: 'GS__2309.JPG',
+                        nama: 'Dinding Musical Instruments & Akses Lantai',
+                        desk: 'Dinding pameran ragam alat musik petik dan tiup dunia di dekat papan penunjuk lantai.',
+                        hadap: 185, gMaju: 145, eMaju: -6, gMundur: 350, eMundur: -6
+                    },
+                    {
+                        file: 'GS__2308.JPG',
+                        nama: 'Koridor Tengah Grand Piano & Asia',
+                        desk: 'Lorong penghubung melintasi etalase Grand Piano dan koleksi musik Asia menuju aula utama.',
+                        hadap: 250, gMaju: 268, eMaju: -6, gMundur: 115, eMundur: -6
+                    },
+                    {
+                        file: 'GS__2307.JPG',
+                        nama: 'Aula Utama Galeri Musik Dunia',
+                        desk: 'Aula terbuka Lantai 1 yang menghubungkan area tengah dengan zona Eropa dan Terry Bozzio.',
+                        hadap: 280, gMaju: 298, eMaju: -6, gMundur: 38, eMundur: -6
+                    },
+                    {
+                        file: 'GS__2304.JPG',
+                        nama: 'Zona Eropa, Timur Tengah, India & Drum Set Terry Bozzio',
+                        desk: 'Titik pameran utama Lantai 1: instrumen Eropa di kiri, Drum Set Terry Bozzio di tengah, serta Timur Tengah dan India di kanan.',
+                        hadap: 180, gMaju: 258, eMaju: -6, gMundur: 42, eMundur: -6,
+                        info: [
+                            {
+                                g: 168, e: 4,
+                                judul: 'Drum Set Terry Bozzio (Satu-satunya di Indonesia)',
+                                isi: 'Set drum raksasa dengan puluhan tom, pedal, dan simbal yang disetel secara melodis dan kromatis milik drummer Terry Bozzio. Instalasi ini merupakan koleksi pertama dan satu-satunya di Indonesia.'
+                            },
+                            {
+                                g: 222, e: 8,
+                                judul: 'Koleksi Eropa, Timur Tengah & India',
+                                isi: 'Menghimpun alat musik tradisional dan klasik lintas wilayah: instrumen dawai dan tiup Eropa di sisi kiri, instrumen petik serta perkusi Timur Tengah seperti Oud dan Darbuka, hingga Sitar dan Tabla dari India di sisi kanan.'
+                            }
+                        ]
+                    },
+                    {
+                        file: 'GS__2303.JPG',
+                        nama: 'Podium Harpa & Aula Tengah',
+                        desk: 'Etalase Harpa di pusat aula putih menuju serambi dalam Museum Musik Dunia.',
+                        hadap: 335, gMaju: 335, eMaju: -6, gMundur: 142, eMundur: -6
+                    },
+                    {
+                        file: 'GS__2302.JPG',
+                        nama: 'Serambi Utama Museum Musik Dunia',
+                        desk: 'Area serambi dengan papan nama Museum Musik Dunia dan pajangan kostum panggung.',
+                        hadap: 245, gMaju: 262, eMaju: -6, gMundur: 155, eMundur: -6
+                    },
+                    {
+                        file: 'GS__2301.JPG',
+                        nama: 'Instalasi Pohon Gitar & Simbal',
+                        desk: 'Pilar tengah berhiaskan puluhan gitar dan simbal di bawah langit-langit berbintang.',
+                        hadap: 195, gMaju: 235, eMaju: -6, gMundur: 72, eMundur: -6
+                    },
+                    {
+                        file: 'GS__2300.JPG',
+                        nama: 'Ujung Galeri Lantai 1 Menuju Lantai 2',
+                        desk: 'Titik akhir eksplorasi Lantai 1. Gunakan panah emas maju untuk melanjutkan ke Lantai 2.',
+                        hadap: 240, gMaju: 275, eMaju: -6, gMundur: 90, eMundur: -6
+                    }
+                ]
+            },
+            {
+                id: 'lt2',
+                singkat: 'Lt. 2',
+                lencana: 'Lantai 2',
+                subSingkat: 'Keroncong, Rock & Jazz',
+                judul: "Zona Sejarah Keroncong, Musisi Indonesia, Rock 'n' Roll & The Beatles",
+                deskripsi: "Melanjutkan langkah dari mural Sejarah Keroncong Kampung Tugu, melewati ruang lantai catur, koridor merah musisi Indonesia, dinding Gold Award, lorong Eric Clapton dan Queen, mural Abbey Road, Jazz New Orleans, hingga panggung Jazz Stage.",
+                warnaFallback: '#1a273b',
+                thumbnail: 'img/GP__2291.JPG',
+                fallbackThumbnail: 'img/GS__2272.JPG',
+                utama: false,
+                titik: [
+                    {
+                        file: 'GS__2288.JPG',
+                        nama: 'Panel Sejarah Keroncong Kampung Tugu, Jakarta Utara',
+                        desk: 'Titik awal Lantai 2 dengan mural besar Sejarah Keroncong dan koleksi instrumen ansambel keroncong.',
+                        hadap: 295, gMaju: 10, eMaju: -6, gMundur: 212, eMundur: -6,
+                        info: [
+                            {
+                                g: 278, e: 12,
+                                judul: 'Sejarah Keroncong Kampung Tugu, Jakarta Utara',
+                                isi: 'Musik Keroncong tumbuh dari akulturasi budaya Portugis sejak abad ke-16 dengan masyarakat Nusantara, lalu berkembang khas di Kampung Tugu, Jakarta Utara. Ansambelnya memadukan cak, cuk, ukulele, gitar, biola, fluit, selo petik, dan kontrabas.'
+                            }
+                        ]
+                    },
+                    {
+                        file: 'GS__2287.JPG',
+                        nama: 'Ruang Lantai Catur, Piano Raksasa & BTS',
+                        desk: 'Ruang pamer berlantai papan catur dengan instalasi tuts piano lantai dan gerbang neon biru.',
+                        hadap: 95, gMaju: 50, eMaju: -5, gMundur: 252, eMundur: -6
+                    },
+                    {
+                        file: 'GS__2286.JPG',
+                        nama: 'Serambi Potret Musisi & Lorong Neon',
+                        desk: 'Serambi berdinding kayu penuh potret musisi tepat di depan terowongan neon biru.',
+                        hadap: 45, gMaju: 15, eMaju: -6, gMundur: 188, eMundur: -6
+                    },
+                    {
+                        file: 'GS__2284.JPG',
+                        nama: 'Aula Galeri Musik Populer & Diva',
+                        desk: 'Aula lantai merah dengan panggung diva internasional dan grup musik menuju lorong koridor merah.',
+                        hadap: 65, gMaju: 48, eMaju: -7, gMundur: 185, eMundur: -7
+                    },
+                    {
+                        file: 'GS__2281.JPG',
+                        nama: 'Koridor Merah Arsip Musisi Indonesia',
+                        desk: 'Lorong koleksi foto berbingkai, gitar pamer, dan figur musisi Tanah Air menuju ruang Gold Award.',
+                        hadap: 12, gMaju: 12, eMaju: -6, gMundur: 182, eMundur: -7
+                    },
+                    {
+                        file: 'GS__2280.JPG',
+                        nama: 'Galeri Gold Award 500.000 Albums & Musisi Indonesia',
+                        desk: 'Dinding lengkung penghargaan piringan emas album Indonesia berdampingan dengan deretan figur musisi nasional.',
+                        hadap: 60, gMaju: 50, eMaju: -6, gMundur: 190, eMundur: -7
+                    },
+                    {
+                        file: 'GS__2277.JPG',
+                        nama: 'Lorong Legenda Rock: Eric Clapton, Queen & Freddie Mercury',
+                        desk: 'Lorong beratap neon dengan koleksi Eric Clapton, Queen, Deep Purple, God Bless, Freddie Mercury, dan Tony Q.',
+                        hadap: 12, gMaju: 8, eMaju: -6, gMundur: 205, eMundur: -6
+                    },
+                    {
+                        file: 'GS__2273.JPG',
+                        nama: 'Galeri Peta Silsilah Genre, Elvis & Abbey Road',
+                        desk: "Sudut King of Rock 'n' Roll (Elvis Presley), dinding gitar bertanda tangan asli, dan mural Abbey Road.",
+                        hadap: 135, gMaju: 12, eMaju: -6, gMundur: 228, eMundur: -6,
+                        info: [
+                            {
+                                g: 165, e: 8,
+                                judul: 'Peta Silsilah Genre Musik Dunia',
+                                isi: "Peta visual yang menghubungkan akar Blues, Jazz, Gospel, Rhythm & Blues, Reggae, Ska, Soul, Funk, Punk, Rock 'n' Roll, hingga Heavy Metal dan musik populer modern.",
+                                foto: 'img/GP__2293.JPG'
+                            }
+                        ]
+                    },
+                    {
+                        file: 'GS__2272.JPG',
+                        nama: "Zona Jazz New Orleans, Rock 'n' Roll & The Beatles",
+                        desk: "Papan sejarah Jazz New Orleans dan diagram Rock 'n' Roll di dinding tengah, serta memorabilia The Beatles di sisi kanan.",
+                        hadap: 185, gMaju: 75, eMaju: -6, gMundur: 282, eMundur: -6,
+                        info: [
+                            {
+                                g: 180, e: 8,
+                                judul: "Jazz New Orleans & Rock 'n' Roll",
+                                isi: "Mengulas lahirnya musik Jazz di New Orleans pada awal abad ke-20 yang berpadu dengan Blues dan Swing, lalu mendorong kemunculan budaya Rock 'n' Roll di pertengahan abad ke-20."
+                            },
+                            {
+                                g: 340, e: 10,
+                                judul: 'Memorabilia The Beatles',
+                                isi: 'Koleksi piringan, foto, dan dokumentasi perjalanan kuartet Liverpool (John Lennon, Paul McCartney, George Harrison, dan Ringo Starr) dalam sejarah rekaman studio dan musik pop.',
+                                foto: 'img/GP__2292.JPG'
+                            }
+                        ]
+                    },
+                    {
+                        file: 'GS__2271.JPG',
+                        nama: 'Panggung World Festival Jazz Stage (Menuju Lantai 3)',
+                        desk: 'Berada di depan panggung biru World Festival Jazz Stage dan Jazz Bar. Klik panah maju untuk naik ke Lantai 3.',
+                        hadap: 180, gMaju: 112, eMaju: -6, gMundur: 268, eMundur: -6
+                    }
+                ]
+            },
+            {
+                id: 'lt3',
+                singkat: 'Lt. 3',
+                lencana: 'Lantai 3',
+                subSingkat: 'Piano Klasik & Konser',
+                judul: 'Galeri Piano Klasik, Ruang Konser Grand Piano & Selasar Akhir',
+                deskripsi: 'Menyusuri 4 titik terakhir di Lantai 3: deretan piano klasik dan lemari pemutar audio antik, aula karpet merah bergaya Eropa, ruang konser Grand Piano, hingga selasar keluar.',
+                warnaFallback: '#2f191d',
+                thumbnail: 'img/GS__2227.JPG',
+                fallbackThumbnail: 'img/GP__2317.JPG',
+                utama: false,
+                titik: [
+                    {
+                        file: 'GS__2230.JPG',
+                        nama: 'Galeri Piano Klasik & Koleksi Audio',
+                        desk: 'Titik awal Lantai 3 dengan deretan piano klasik tegak dan rak perangkat pemutar audio antik.',
+                        hadap: 120, gMaju: 45, eMaju: -6, gMundur: 305, eMundur: -6
+                    },
+                    {
+                        file: 'GS__2229.JPG',
+                        nama: 'Aula Karpet Merah & Organ Pipa Klasik',
+                        desk: 'Aula pameran karpet merah dengan pajangan organ klasik dan lorong menuju ruang Grand Piano.',
+                        hadap: 120, gMaju: 75, eMaju: -6, gMundur: 268, eMundur: -6
+                    },
+                    {
+                        file: 'GS__2227.JPG',
+                        nama: 'Ruang Konser Grand Piano Klasik',
+                        desk: 'Ruang konser marmer dengan Grand Piano, panggung tirai merah, dan gerbang lengkung emas.',
+                        hadap: 190, gMaju: 35, eMaju: -5, gMundur: 185, eMundur: -5
+                    },
+                    {
+                        file: 'GS__2225.JPG',
+                        nama: 'Selasar Terbuka Lantai 3 (Titik Akhir Tur)',
+                        desk: 'Titik terakhir seluruh rute tur 3 lantai. Tekan Selesai atau pilih lantai lain di bilah bawah.',
+                        hadap: 185, gMaju: null, eMaju: -6, gMundur: 25, eMundur: -6
+                    }
+                ]
+            }
+        ];
+
+        // Daftar datar berurutan seluruh 37 langkah agar navigasi Maju/Mundur menyambung otomatis lintas lantai.
+        const URUTAN_GLOBAL = [];
+        DATA_LANTAI.forEach(lantai => {
+            lantai.titik.forEach((_, idx) => {
+                URUTAN_GLOBAL.push({ lantaiId: lantai.id, idx });
+            });
+        });
+
+        const JARAK_HOTSPOT = 5.2;
+        const JARAK_PANEL_VR = 2.75;
+        const CACHE_GAMBAR_360 = {};
+        const CACHE_FOTO_DETAIL = {};
+        let modeKalibrasi = false;
+        let animasiDijeda = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        let elemenFokusSebelumModal = null;
+
+        function cariLantai(lantaiId) {
+            return DATA_LANTAI.find(l => l.id === lantaiId) || DATA_LANTAI[0];
+        }
+
+        function indeksGlobal(lantaiId, idx) {
+            return URUTAN_GLOBAL.findIndex(item => item.lantaiId === lantaiId && item.idx === idx);
+        }
+
+        function targetLangkahGlobal(lantaiId, idx, arah) {
+            const pos = indeksGlobal(lantaiId, idx);
+            if (pos === -1) return null;
+            const tujuan = pos + arah;
+            if (tujuan < 0 || tujuan >= URUTAN_GLOBAL.length) return null;
+            return URUTAN_GLOBAL[tujuan];
+        }
+
+        // Selaras dengan SphereGeometry scale="-1 1 1" pada <a-sky rotation="0 0 0"> di A-Frame 1.6.0.
+        function arahDari(g, e, r) {
+            const gr = THREE.MathUtils.degToRad(g);
+            const er = THREE.MathUtils.degToRad(e);
+            return new THREE.Vector3(
+                r * Math.cos(gr) * Math.cos(er),
+                r * Math.sin(er),
+                r * Math.sin(gr) * Math.cos(er)
+            );
+        }
+
+        function yawUntuk(g) {
+            const gr = THREE.MathUtils.degToRad(g);
+            return THREE.MathUtils.radToDeg(Math.atan2(-Math.cos(gr), -Math.sin(gr)));
+        }
+
+        // Font MSDF roboto bawaan A-Frame tidak memuat beberapa karakter non-ASCII.
+        function keTeksAsciiVR(teks) {
+            return String(teks || '')
+                .replace(/[\u2013\u2014]/g, '-')
+                .replace(/\u2022/g, '-')
+                .replace(/\u2026/g, '...')
+                .replace(/\u00B0/g, ' deg')
+                .replace(/[\u2018\u2019]/g, "'")
+                .replace(/[\u201C\u201D]/g, '"');
+        }
+
+        function buatTeksturPlaceholder360(lantai, titik, idx) {
+            const canvas = document.createElement('canvas');
+            const W = 2048;
+            const H = 1024;
+            canvas.width = W;
+            canvas.height = H;
+            const ctx = canvas.getContext('2d');
+
+            const grad = ctx.createLinearGradient(0, 0, 0, H);
+            grad.addColorStop(0, '#0d0c0b');
+            grad.addColorStop(0.3, lantai.warnaFallback);
+            grad.addColorStop(0.55, lantai.warnaFallback);
+            grad.addColorStop(0.8, '#141210');
+            grad.addColorStop(1, '#090807');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, W, H);
+
+            for (let deg = 0; deg <= 360; deg += 15) {
+                const x = (deg / 360) * W;
+                const utama = deg % 90 === 0;
+                ctx.strokeStyle = utama ? 'rgba(226, 177, 68, 0.55)' : 'rgba(226, 177, 68, 0.16)';
+                ctx.lineWidth = utama ? 3 : 1.5;
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, H);
+                ctx.stroke();
+            }
+
+            for (let lat = -75; lat <= 75; lat += 15) {
+                const y = (0.5 - lat / 180) * H;
+                const horizon = lat === 0;
+                ctx.strokeStyle = horizon ? 'rgba(226, 177, 68, 0.7)' : 'rgba(245, 240, 230, 0.12)';
+                ctx.lineWidth = horizon ? 3 : 1.5;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(W, y);
+                ctx.stroke();
+            }
+
+            ctx.font = 'bold 20px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#e2b144';
+            for (let deg = 30; deg < 360; deg += 30) {
+                if (deg % 90 === 0) continue;
+                ctx.fillText(`${deg}°`, (deg / 360) * W, H / 2 - 12);
+            }
+
+            const penandaArah = [
+                { label: 'DEPAN 0°', g: 0 },
+                { label: 'KANAN 90°', g: 90 },
+                { label: 'BELAKANG 180°', g: 180 },
+                { label: 'KIRI 270°', g: 270 }
+            ];
+            const filePath = `img/${titik.file}`;
+            const teksUrutan = `${lantai.lencana} | Titik ${idx + 1} / ${lantai.titik.length}`;
+
+            const gambarKartu = (cx, labelArah) => {
+                const cy = H / 2;
+                ctx.save();
+                ctx.fillStyle = 'rgba(18, 17, 16, 0.86)';
+                ctx.strokeStyle = '#e2b144';
+                ctx.lineWidth = 2;
+                ctx.fillRect(cx - 215, cy - 110, 430, 220);
+                ctx.strokeRect(cx - 215, cy - 110, 430, 220);
+
+                ctx.textAlign = 'center';
+                ctx.fillStyle = '#e2b144';
+                ctx.font = 'bold 34px Georgia, serif';
+                ctx.fillText(labelArah, cx, cy - 56);
+
+                ctx.fillStyle = '#93c5fd';
+                ctx.font = 'bold 20px monospace';
+                ctx.fillText(`FILE: ${filePath}`, cx, cy - 18);
+
+                ctx.fillStyle = '#f5f0e6';
+                ctx.font = 'bold 23px sans-serif';
+                const namaPendek = titik.nama.length > 34 ? titik.nama.slice(0, 33) + '...' : titik.nama;
+                ctx.fillText(namaPendek, cx, cy + 24);
+
+                ctx.fillStyle = '#c9c0b1';
+                ctx.font = '18px sans-serif';
+                ctx.fillText(teksUrutan, cx, cy + 58);
+
+                ctx.fillStyle = '#c9c0b1';
+                ctx.font = '15px sans-serif';
+                ctx.fillText('Salin foto equirectangular GS__*.JPG ke folder img/', cx, cy + 88);
+                ctx.restore();
+            };
+
+            penandaArah.forEach(item => {
+                if (item.g === 0) {
+                    gambarKartu(0, item.label);
+                    gambarKartu(W, item.label);
+                } else {
+                    gambarKartu((item.g / 360) * W, item.label);
+                }
+            });
+
+            return canvas.toDataURL('image/jpeg', 0.86);
+        }
+
+        function daftarAsetGambar(idAset, imgEl) {
+            const wadah = document.getElementById('wadah-aset');
+            const lama = document.getElementById(idAset);
+            if (lama) lama.remove();
+            imgEl.id = idAset;
+            wadah.appendChild(imgEl);
+            return `#${idAset}`;
+        }
+
+        function buatElemenPlaceholderImg(lantai, titik, idx) {
+            const dataUrl = buatTeksturPlaceholder360(lantai, titik, idx);
+            return new Promise(resolve => {
+                const imgPh = new Image();
+                imgPh.onload = () => resolve(imgPh);
+                imgPh.onerror = () => resolve(imgPh);
+                imgPh.src = dataUrl;
+            });
+        }
+
+        function muatGambarTitik(lantaiId, idx) {
+            const kunci = `${lantaiId}:${idx}`;
+            if (CACHE_GAMBAR_360[kunci]) return Promise.resolve(CACHE_GAMBAR_360[kunci]);
+
+            const lantai = cariLantai(lantaiId);
+            const titik = lantai.titik[idx];
+            const idAset = `sky-${lantaiId}-${idx}`;
+            const filePath = `img/${titik.file}`;
+
+            // Hanya file GS__*.JPG (equirectangular) yang boleh dipakai sebagai tekstur <a-sky>.
+            if (!/^GS__.*\.jpg$/i.test(titik.file)) {
+                return buatElemenPlaceholderImg(lantai, titik, idx).then(imgPh => {
+                    const hasil = { src: daftarAsetGambar(idAset, imgPh), asli: false, filePath };
+                    CACHE_GAMBAR_360[kunci] = hasil;
+                    return hasil;
+                });
+            }
+
+            return new Promise(resolve => {
+                const img = new Image();
+                img.onload = () => {
+                    const hasil = { src: daftarAsetGambar(idAset, img), asli: true, filePath };
+                    CACHE_GAMBAR_360[kunci] = hasil;
+                    resolve(hasil);
+                };
+                img.onerror = async () => {
+                    const imgPh = await buatElemenPlaceholderImg(lantai, titik, idx);
+                    const hasil = { src: daftarAsetGambar(idAset, imgPh), asli: false, filePath };
+                    CACHE_GAMBAR_360[kunci] = hasil;
+                    resolve(hasil);
+                };
+                img.src = filePath;
+            });
+        }
+
+        function cekFotoDetail(pathFoto) {
+            if (!pathFoto) return Promise.resolve(null);
+            if (Object.prototype.hasOwnProperty.call(CACHE_FOTO_DETAIL, pathFoto)) {
+                return Promise.resolve(CACHE_FOTO_DETAIL[pathFoto]);
+            }
+            const idAset = 'detail-' + pathFoto.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+            return new Promise(resolve => {
+                const img = new Image();
+                img.onload = () => {
+                    const ref = daftarAsetGambar(idAset, img);
+                    CACHE_FOTO_DETAIL[pathFoto] = ref;
+                    resolve(ref);
+                };
+                img.onerror = () => {
+                    CACHE_FOTO_DETAIL[pathFoto] = null;
+                    resolve(null);
+                };
+                img.src = pathFoto;
+            });
+        }
+
+        function hitungBarisTeks(teks, maxKarakter) {
+            let total = 0;
+            String(teks).split('\n').forEach(paragraf => {
+                let baris = 1;
+                let panjang = 0;
+                paragraf.split(' ').forEach(kata => {
+                    if (panjang + kata.length > maxKarakter) {
+                        baris++;
+                        panjang = kata.length + 1;
+                    } else {
+                        panjang += kata.length + 1;
+                    }
+                });
+                total += baris;
+            });
+            return Math.max(1, total);
+        }
+
+        function ambilKomponenTur() {
+            const scene = document.querySelector('#adegan-vr');
+            return scene && scene.components ? scene.components['tur-museum'] : null;
+        }
+
+        function sembunyikanSemuaLayar() {
+            document.getElementById('layar-pembuka').classList.add('sembunyi');
+            document.getElementById('layar-zona').classList.add('sembunyi');
+            document.getElementById('layar-selesai').classList.add('sembunyi');
+        }
+
+        function aturTampilHud(tampil) {
+            document.body.classList.toggle('mode-360-aktif', Boolean(tampil));
+            ['hud-lokasi', 'hud-kanan', 'hud-navigasi'].forEach(id => {
+                document.getElementById(id).classList.toggle('sembunyi', !tampil);
+            });
+            if (!tampil) {
+                document.getElementById('hud-kalibrasi').classList.add('sembunyi');
+            } else if (modeKalibrasi) {
+                document.getElementById('hud-kalibrasi').classList.remove('sembunyi');
+            }
+        }
+
+        function aturIndikatorMuat(tampil, pesan) {
+            const el = document.getElementById('indikator-muat');
+            if (pesan) document.getElementById('teks-muat').textContent = pesan;
+            el.classList.toggle('sembunyi', !tampil);
+        }
+
+        function bukaMenuZona() {
+            tutupPanelInfo();
+            sembunyikanSemuaLayar();
+            aturTampilHud(false);
+            document.getElementById('layar-zona').classList.remove('sembunyi');
+        }
+
+        function selesaikanTur() {
+            tutupPanelInfo();
+            sembunyikanSemuaLayar();
+            aturTampilHud(false);
+            document.getElementById('layar-selesai').classList.remove('sembunyi');
+        }
+
+        function kembaliKeAwal() {
+            tutupPanelInfo();
+            sembunyikanSemuaLayar();
+            aturTampilHud(false);
+            document.getElementById('layar-pembuka').classList.remove('sembunyi');
+        }
+
+        function mulaiDariLantai(lantaiId, idx = 0) {
+            const lantai = cariLantai(lantaiId);
+            if (!lantai || lantai.titik.length === 0) {
+                bukaMenuZona();
+                return;
+            }
+            const tur = ambilKomponenTur();
+            if (!tur) {
+                document.getElementById('layar-galat').classList.remove('sembunyi');
+                return;
+            }
+            tutupPanelInfo();
+            sembunyikanSemuaLayar();
+            aturTampilHud(true);
+            tur.kunjungiTitik(lantai.id, idx, tur.sudahTampil);
+        }
+
+        function navigasiLangkah(arah) {
+            const tur = ambilKomponenTur();
+            if (!tur || !tur.lantaiAktif) return;
+            const target = targetLangkahGlobal(tur.lantaiAktif, tur.indeksAktif, arah);
+            if (target) {
+                tur.kunjungiTitik(target.lantaiId, target.idx, true);
+            }
+        }
+
+        function perbaruiTombolAnimasi() {
+            const btn = document.getElementById('btn-animasi');
+            if (!btn) return;
+            btn.setAttribute('aria-pressed', String(animasiDijeda));
+            btn.textContent = animasiDijeda ? 'Aktifkan Animasi' : 'Jeda Animasi';
+        }
+
+        function toggleAnimasiHotspot() {
+            animasiDijeda = !animasiDijeda;
+            perbaruiTombolAnimasi();
+            const tur = ambilKomponenTur();
+            if (tur) tur.terapkanStatusAnimasi();
+        }
+
+        function tutupPanelInfo() {
+            const overlay = document.getElementById('modal-info-overlay');
+            const sedangBuka = !overlay.classList.contains('sembunyi');
+            overlay.classList.add('sembunyi');
+            const tur = ambilKomponenTur();
+            if (tur) tur.tutupPanelVR();
+            if (sedangBuka && elemenFokusSebelumModal && typeof elemenFokusSebelumModal.focus === 'function') {
+                elemenFokusSebelumModal.focus();
+                elemenFokusSebelumModal = null;
+            }
+        }
+
+        function jikaKlikLatarModal(event) {
+            if (event.target && event.target.id === 'modal-info-overlay') {
+                tutupPanelInfo();
+            }
+        }
+
+        function bangunMenuLantai() {
+            const wadah = document.getElementById('daftar-zona');
+            wadah.innerHTML = '';
+
+            if (!DATA_LANTAI.length) {
+                wadah.innerHTML = '<div class="status-kosong"><p>Belum ada daftar lantai yang dikonfigurasi.</p></div>';
+                return;
+            }
+
+            DATA_LANTAI.forEach((lantai, i) => {
+                const kartu = document.createElement('button');
+                kartu.type = 'button';
+                kartu.className = 'kartu-lantai' + (lantai.utama ? ' kartu-utama' : '');
+                kartu.onclick = () => mulaiDariLantai(lantai.id, 0);
+
+                const pratinjau = document.createElement('div');
+                pratinjau.className = 'pratinjau-lantai';
+
+                const img = document.createElement('img');
+                img.width = 800;
+                img.height = 450;
+                img.alt = `Pratinjau ${lantai.lencana}: ${lantai.judul}`;
+                img.src = lantai.thumbnail;
+
+                const fallbackBox = document.createElement('div');
+                fallbackBox.className = 'pratinjau-fallback sembunyi';
+                fallbackBox.innerHTML = `<strong>${lantai.lencana}: ${lantai.subSingkat}</strong><span>Pratinjau belum ditemukan (${lantai.thumbnail})</span>`;
+
+                let sudahCobaFallback = false;
+                img.onerror = () => {
+                    if (!sudahCobaFallback && lantai.fallbackThumbnail) {
+                        sudahCobaFallback = true;
+                        img.src = lantai.fallbackThumbnail;
+                    } else {
+                        img.classList.add('sembunyi');
+                        fallbackBox.classList.remove('sembunyi');
+                    }
+                };
+
+                const badge = document.createElement('span');
+                badge.className = 'badge-jumlah';
+                badge.textContent = `${lantai.titik.length} Titik 360°`;
+
+                pratinjau.appendChild(img);
+                pratinjau.appendChild(fallbackBox);
+                pratinjau.appendChild(badge);
+
+                const urutanLabel = i === 0
+                    ? 'Titik awal: Pintu Masuk Utama'
+                    : (i === 1 ? 'Lanjutan langkah 13 sampai 22' : 'Lanjutan langkah 23 sampai 26');
+
+                const isi = document.createElement('div');
+                isi.className = 'isi-kartu';
+                isi.innerHTML = `
+                    <div class="baris-label-lantai">
+                        <span class="lencana-lantai">${lantai.lencana}</span>
+                        <span class="status-urutan">${urutanLabel}</span>
+                    </div>
+                    <h3>${lantai.judul}</h3>
+                    <p>${lantai.deskripsi}</p>
+                    <span class="aksi-kartu">Buka ${lantai.lencana}</span>
+                `;
+
+                kartu.appendChild(pratinjau);
+                kartu.appendChild(isi);
+                wadah.appendChild(kartu);
+            });
+        }
+
+        function bangunShortcutLantai() {
+            const nav = document.getElementById('hud-navigasi');
+            nav.innerHTML = '';
+            DATA_LANTAI.forEach(lantai => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.dataset.lantai = lantai.id;
+                btn.innerHTML = `<span>${lantai.singkat}</span><span class="label-sub">${lantai.subSingkat}</span>`;
+                btn.onclick = () => {
+                    const tur = ambilKomponenTur();
+                    if (!tur) return;
+                    if (tur.lantaiAktif === lantai.id && tur.indeksAktif === 0) return;
+                    tur.kunjungiTitik(lantai.id, 0, true);
+                };
+                nav.appendChild(btn);
+            });
+        }
+
+        function inisialisasiAFrame() {
+            bangunMenuLantai();
+            bangunShortcutLantai();
+            perbaruiTombolAnimasi();
+
+            if (typeof window.AFRAME === 'undefined') {
+                document.getElementById('layar-galat').classList.remove('sembunyi');
+                return;
+            }
+
+            AFRAME.registerComponent('tur-museum', {
+                init() {
+                    this.langit = document.querySelector('#langit');
+                    this.wadah = document.querySelector('#wadah-hotspot');
+                    this.panelVR = document.querySelector('#panel-info-vr');
+                    this.kamera = document.querySelector('#kamera');
+                    this.rig = document.querySelector('#rig');
+
+                    this.sedangPindah = false;
+                    this.sudahTampil = false;
+                    this.lantaiAktif = null;
+                    this.indeksAktif = 0;
+
+                    document.querySelector('#vr-panel-tutup').addEventListener('click', () => this.tutupPanelVR());
+                    this.el.addEventListener('enter-vr', () => this.aturModeVR(true));
+                    this.el.addEventListener('exit-vr', () => this.aturModeVR(false));
+                },
+
+                tick() {
+                    if (!modeKalibrasi || !this.sudahTampil) return;
+                    const camObj = this.kamera && (this.kamera.getObject3D('camera') || this.kamera.object3D);
+                    if (!camObj) return;
+                    const q = new THREE.Quaternion();
+                    camObj.getWorldQuaternion(q);
+                    const dir = new THREE.Vector3(0, 0, -1).applyQuaternion(q);
+                    const g = ((THREE.MathUtils.radToDeg(Math.atan2(dir.z, dir.x)) % 360) + 360) % 360;
+                    const e = THREE.MathUtils.radToDeg(Math.asin(THREE.MathUtils.clamp(dir.y, -1, 1)));
+                    document.getElementById('hud-kalibrasi').textContent =
+                        `Kalibrasi | Azimuth g: ${Math.round(g)}° | Elevasi e: ${Math.round(e)}° (Tekan K untuk tutup)`;
+                },
+
+                aturModeVR(aktifVR) {
+                    const kursor = document.querySelector('#kursor-tatap');
+                    kursor.setAttribute('visible', aktifVR);
+                    kursor.setAttribute('raycaster', 'enabled', aktifVR);
+                    if (aktifVR) {
+                        document.getElementById('modal-info-overlay').classList.add('sembunyi');
+                    }
+                    document.querySelectorAll('.hud').forEach(el => {
+                        el.style.display = aktifVR ? 'none' : '';
+                    });
+                    this.segarkanRaycaster();
+                },
+
+                segarkanRaycaster() {
+                    [
+                        this.el,
+                        document.querySelector('#kursor-tatap'),
+                        document.querySelector('#laser-kanan'),
+                        document.querySelector('#laser-kiri')
+                    ].forEach(el => {
+                        if (el && el.components && el.components.raycaster) {
+                            el.components.raycaster.refreshObjects();
+                        }
+                    });
+                },
+
+                terapkanStatusAnimasi() {
+                    this.wadah.querySelectorAll('.ring-denyut').forEach(ring => {
+                        if (animasiDijeda) {
+                            ring.pause();
+                        } else {
+                            ring.play();
+                        }
+                    });
+                },
+
+                pudarLangit(warnaTujuan, durasi = 240) {
+                    if (animasiDijeda) {
+                        this.langit.setAttribute('material', 'color', warnaTujuan);
+                        return Promise.resolve();
+                    }
+                    return new Promise(resolve => {
+                        const langit = this.langit;
+                        let selesai = false;
+                        const akhiri = () => {
+                            if (selesai) return;
+                            selesai = true;
+                            langit.removeEventListener('animationcomplete__pudar', akhiri);
+                            clearTimeout(timerAman);
+                            resolve();
+                        };
+                        const timerAman = setTimeout(akhiri, durasi + 150);
+                        langit.removeAttribute('animation__pudar');
+                        langit.addEventListener('animationcomplete__pudar', akhiri);
+                        langit.setAttribute('animation__pudar', {
+                            property: 'material.color',
+                            to: warnaTujuan,
+                            dur: durasi,
+                            easing: 'easeInOutQuad'
+                        });
+                    });
+                },
+
+                terapkanTeksturLangit(src) {
+                    return new Promise(resolve => {
+                        const langit = this.langit;
+                        let selesai = false;
+                        const akhiri = () => {
+                            if (selesai) return;
+                            selesai = true;
+                            langit.removeEventListener('materialtextureloaded', akhiri);
+                            clearTimeout(timerAman);
+                            resolve();
+                        };
+                        const timerAman = setTimeout(akhiri, 360);
+                        langit.addEventListener('materialtextureloaded', akhiri);
+                        langit.setAttribute('material', 'src', src);
+                    });
+                },
+
+                async kunjungiTitik(lantaiId, idx, pakaiTransisi = true) {
+                    if (!this.el.hasLoaded) {
+                        await new Promise(resolve => this.el.addEventListener('loaded', resolve, { once: true }));
+                    }
+                    if (this.sedangPindah) return;
+                    const lantai = cariLantai(lantaiId);
+                    if (!lantai || !lantai.titik[idx]) return;
+                    if (this.sudahTampil && this.lantaiAktif === lantaiId && this.indeksAktif === idx) return;
+
+                    this.sedangPindah = true;
+                    tutupPanelInfo();
+
+                    const titik = lantai.titik[idx];
+                    const kunci = `${lantaiId}:${idx}`;
+                    if (!CACHE_GAMBAR_360[kunci] && !this.el.is('vr-mode')) {
+                        aturIndikatorMuat(true, `Memuat ${lantai.singkat}: ${titik.nama} (${titik.file})...`);
+                    }
+
+                    try {
+                        this.wadah.setAttribute('visible', false);
+                        const tugasMuat = muatGambarTitik(lantaiId, idx);
+                        const tugasPudar = pakaiTransisi ? this.pudarLangit('#000000', 240) : Promise.resolve();
+                        const [hasilGambar] = await Promise.all([tugasMuat, tugasPudar]);
+
+                        this.lantaiAktif = lantaiId;
+                        this.indeksAktif = idx;
+                        this.sudahTampil = true;
+
+                        await this.terapkanTeksturLangit(hasilGambar.src);
+
+                        const lc = this.kamera.components && this.kamera.components['look-controls'];
+                        if (lc && lc.yawObject && lc.pitchObject && !this.el.is('vr-mode')) {
+                            lc.yawObject.rotation.y = 0;
+                            lc.pitchObject.rotation.x = 0;
+                        }
+                        const arahHadap = typeof titik.hadap === 'number' ? titik.hadap : 180;
+                        this.rig.object3D.rotation.y = THREE.MathUtils.degToRad(yawUntuk(arahHadap));
+
+                        this.bangunHotspotTitik(lantai, idx);
+                        this.perbaruiHud(lantai, idx, hasilGambar);
+                        aturIndikatorMuat(false);
+
+                        if (pakaiTransisi) {
+                            await this.pudarLangit('#ffffff', 250);
+                        } else {
+                            this.langit.setAttribute('material', 'color', '#ffffff');
+                        }
+
+                        this.wadah.setAttribute('visible', true);
+                        this.terapkanStatusAnimasi();
+                        this.segarkanRaycaster();
+                    } finally {
+                        aturIndikatorMuat(false);
+                        this.sedangPindah = false;
+                    }
+                },
+
+                bangunHotspotTitik(lantai, idx) {
+                    while (this.wadah.firstChild) {
+                        this.wadah.removeChild(this.wadah.firstChild);
+                    }
+
+                    const titik = lantai.titik[idx];
+
+                    const targetMaju = targetLangkahGlobal(lantai.id, idx, 1);
+                    if (targetMaju && typeof titik.gMaju === 'number') {
+                        const lantaiTujuan = cariLantai(targetMaju.lantaiId);
+                        const titikTujuan = lantaiTujuan.titik[targetMaju.idx];
+                        const pindahLantai = lantaiTujuan.id !== lantai.id;
+                        const labelMaju = pindahLantai
+                            ? `Naik ke ${lantaiTujuan.lencana}: ${titikTujuan.nama}`
+                            : `Maju (${targetMaju.idx + 1}/${lantai.titik.length}): ${titikTujuan.nama}`;
+
+                        this.wadah.appendChild(this.buatHotspotPanah({
+                            g: titik.gMaju,
+                            e: titik.eMaju ?? -6,
+                            label: labelMaju,
+                            warna: '#e2b144',
+                            aksi: () => this.kunjungiTitik(targetMaju.lantaiId, targetMaju.idx, true)
+                        }));
+                    }
+
+                    const targetMundur = targetLangkahGlobal(lantai.id, idx, -1);
+                    if (targetMundur && typeof titik.gMundur === 'number') {
+                        const lantaiTujuan = cariLantai(targetMundur.lantaiId);
+                        const titikTujuan = lantaiTujuan.titik[targetMundur.idx];
+                        const pindahLantai = lantaiTujuan.id !== lantai.id;
+                        const labelMundur = pindahLantai
+                            ? `Kembali ke ${lantaiTujuan.lencana}: ${titikTujuan.nama}`
+                            : `Mundur (${targetMundur.idx + 1}/${lantai.titik.length}): ${titikTujuan.nama}`;
+
+                        this.wadah.appendChild(this.buatHotspotPanah({
+                            g: titik.gMundur,
+                            e: titik.eMundur ?? -6,
+                            label: labelMundur,
+                            warna: '#d4a030',
+                            aksi: () => this.kunjungiTitik(targetMundur.lantaiId, targetMundur.idx, true)
+                        }));
+                    }
+
+                    if (Array.isArray(titik.info)) {
+                        titik.info.forEach(itemInfo => {
+                            this.wadah.appendChild(this.buatHotspotInfo(itemInfo, lantai, titik));
+                        });
+                    }
+                },
+
+                buatDasarHotspot(g, e) {
+                    const el = document.createElement('a-entity');
+                    el.object3D.position.copy(arahDari(g, e, JARAK_HOTSPOT));
+                    el.object3D.lookAt(0, 0, 0);
+                    el.addEventListener('mouseenter', () => el.object3D.scale.setScalar(1.15));
+                    el.addEventListener('mouseleave', () => el.object3D.scale.setScalar(1.0));
+                    return el;
+                },
+
+                buatHotspotPanah(opsi) {
+                    const el = this.buatDasarHotspot(opsi.g, opsi.e);
+                    const labelRingkas = opsi.label.length > 36 ? opsi.label.slice(0, 33) + '...' : opsi.label;
+                    const lebarLabel = Math.max(1.5, 0.42 + labelRingkas.length * 0.082);
+
+                    const lingkaran = document.createElement('a-circle');
+                    lingkaran.classList.add('clickable');
+                    lingkaran.setAttribute('radius', '0.44');
+                    lingkaran.setAttribute('position', '0 0 0');
+                    lingkaran.setAttribute('material', 'color: #181613; shader: flat');
+                    lingkaran.addEventListener('click', opsi.aksi);
+
+                    const ringTepi = document.createElement('a-ring');
+                    ringTepi.setAttribute('radius-inner', '0.38');
+                    ringTepi.setAttribute('radius-outer', '0.44');
+                    ringTepi.setAttribute('position', '0 0 0.015');
+                    ringTepi.setAttribute('material', `color: ${opsi.warna}; shader: flat`);
+
+                    const ringDenyut = document.createElement('a-ring');
+                    ringDenyut.classList.add('ring-denyut');
+                    ringDenyut.setAttribute('radius-inner', '0.44');
+                    ringDenyut.setAttribute('radius-outer', '0.51');
+                    ringDenyut.setAttribute('position', '0 0 -0.01');
+                    ringDenyut.setAttribute('material', `color: ${opsi.warna}; opacity: 0.72; shader: flat; transparent: true; depthWrite: false`);
+                    ringDenyut.setAttribute('animation', 'property: scale; from: 1 1 1; to: 1.4 1.4 1.4; loop: true; dur: 1250; easing: easeOutQuad');
+                    ringDenyut.setAttribute('animation__op', 'property: material.opacity; from: 0.72; to: 0; loop: true; dur: 1250; easing: easeOutQuad');
+
+                    const kepalaPanah = document.createElement('a-triangle');
+                    kepalaPanah.setAttribute('vertex-a', '0 0.24 0.03');
+                    kepalaPanah.setAttribute('vertex-b', '-0.21 -0.04 0.03');
+                    kepalaPanah.setAttribute('vertex-c', '0.21 -0.04 0.03');
+                    kepalaPanah.setAttribute('material', `color: ${opsi.warna}; shader: flat`);
+
+                    const batangPanah = document.createElement('a-plane');
+                    batangPanah.setAttribute('width', '0.11');
+                    batangPanah.setAttribute('height', '0.16');
+                    batangPanah.setAttribute('position', '0 -0.13 0.03');
+                    batangPanah.setAttribute('material', `color: ${opsi.warna}; shader: flat`);
+
+                    const latarLabel = document.createElement('a-plane');
+                    latarLabel.setAttribute('width', lebarLabel.toFixed(2));
+                    latarLabel.setAttribute('height', '0.34');
+                    latarLabel.setAttribute('position', '0 -0.74 0');
+                    latarLabel.setAttribute('material', 'color: #121110; shader: flat');
+
+                    const teksLabel = document.createElement('a-text');
+                    teksLabel.setAttribute('value', keTeksAsciiVR(labelRingkas));
+                    teksLabel.setAttribute('align', 'center');
+                    teksLabel.setAttribute('color', opsi.warna);
+                    teksLabel.setAttribute('width', '3.35');
+                    teksLabel.setAttribute('position', '0 -0.74 0.04');
+                    teksLabel.setAttribute('alpha-test', '0.5');
+
+                    el.appendChild(lingkaran);
+                    el.appendChild(ringTepi);
+                    el.appendChild(ringDenyut);
+                    el.appendChild(kepalaPanah);
+                    el.appendChild(batangPanah);
+                    el.appendChild(latarLabel);
+                    el.appendChild(teksLabel);
+                    return el;
+                },
+
+                buatHotspotInfo(h, lantai, titik) {
+                    const el = this.buatDasarHotspot(h.g, h.e);
+                    const judulPendek = h.judul.length > 34 ? h.judul.slice(0, 31) + '...' : h.judul;
+                    const lebarLabel = Math.max(1.4, 0.38 + judulPendek.length * 0.078);
+
+                    const lingkaran = document.createElement('a-circle');
+                    lingkaran.classList.add('clickable');
+                    lingkaran.setAttribute('radius', '0.31');
+                    lingkaran.setAttribute('position', '0 0 0');
+                    lingkaran.setAttribute('material', 'color: #1d4ed8; shader: flat');
+                    lingkaran.addEventListener('click', () => this.bukaPanelInfo(h, lantai, titik));
+
+                    const ringDenyut = document.createElement('a-ring');
+                    ringDenyut.classList.add('ring-denyut');
+                    ringDenyut.setAttribute('radius-inner', '0.31');
+                    ringDenyut.setAttribute('radius-outer', '0.38');
+                    ringDenyut.setAttribute('position', '0 0 -0.01');
+                    ringDenyut.setAttribute('material', 'color: #60a5fa; opacity: 0.88; shader: flat; transparent: true; depthWrite: false');
+                    ringDenyut.setAttribute('animation', 'property: scale; from: 1 1 1; to: 1.32 1.32 1.32; dir: alternate; loop: true; dur: 950; easing: easeInOutSine');
+
+                    const hurufI = document.createElement('a-text');
+                    hurufI.setAttribute('value', 'i');
+                    hurufI.setAttribute('align', 'center');
+                    hurufI.setAttribute('color', '#ffffff');
+                    hurufI.setAttribute('width', '6.2');
+                    hurufI.setAttribute('position', '0 0.03 0.04');
+                    hurufI.setAttribute('alpha-test', '0.5');
+
+                    const latarLabel = document.createElement('a-plane');
+                    latarLabel.setAttribute('width', lebarLabel.toFixed(2));
+                    latarLabel.setAttribute('height', '0.32');
+                    latarLabel.setAttribute('position', '0 -0.62 0');
+                    latarLabel.setAttribute('material', 'color: #102042; shader: flat');
+
+                    const teksLabel = document.createElement('a-text');
+                    teksLabel.setAttribute('value', keTeksAsciiVR(judulPendek));
+                    teksLabel.setAttribute('align', 'center');
+                    teksLabel.setAttribute('color', '#ffffff');
+                    teksLabel.setAttribute('width', '3.25');
+                    teksLabel.setAttribute('position', '0 -0.62 0.04');
+                    teksLabel.setAttribute('alpha-test', '0.5');
+
+                    el.appendChild(lingkaran);
+                    el.appendChild(ringDenyut);
+                    el.appendChild(hurufI);
+                    el.appendChild(latarLabel);
+                    el.appendChild(teksLabel);
+                    return el;
+                },
+
+                async bukaPanelInfo(h, lantai, titik) {
+                    if (this.el.is('vr-mode')) {
+                        await this.bukaPanelVR(h);
+                        return;
+                    }
+
+                    elemenFokusSebelumModal = document.activeElement;
+                    document.getElementById('modal-info-judul').textContent = h.judul;
+                    document.getElementById('modal-info-lokasi').textContent = `${lantai.lencana}: ${titik.nama}`;
+                    document.getElementById('modal-info-deskripsi').textContent = h.isi;
+
+                    const wadahFoto = document.getElementById('modal-foto-wadah');
+                    const imgFoto = document.getElementById('modal-info-foto');
+                    const fallbackFoto = document.getElementById('modal-foto-fallback');
+                    const captionFoto = document.getElementById('modal-foto-caption');
+
+                    if (h.foto) {
+                        wadahFoto.classList.remove('sembunyi');
+                        imgFoto.classList.remove('sembunyi');
+                        fallbackFoto.classList.add('sembunyi');
+                        imgFoto.alt = `Foto detail ${h.judul}`;
+                        captionFoto.textContent = `Foto detail koleksi (${h.foto})`;
+
+                        imgFoto.onload = () => {
+                            imgFoto.classList.remove('sembunyi');
+                            fallbackFoto.classList.add('sembunyi');
+                        };
+                        imgFoto.onerror = () => {
+                            imgFoto.classList.add('sembunyi');
+                            fallbackFoto.classList.remove('sembunyi');
+                            fallbackFoto.textContent = `Foto detail belum ditemukan (${h.foto}). Salin file foto ke folder img/.`;
+                        };
+                        imgFoto.src = h.foto;
+                    } else {
+                        wadahFoto.classList.add('sembunyi');
+                        imgFoto.removeAttribute('src');
+                    }
+
+                    document.getElementById('modal-info-overlay').classList.remove('sembunyi');
+                    document.getElementById('btn-tutup-modal').focus();
+                },
+
+                async bukaPanelVR(h) {
+                    const p = this.panelVR;
+                    const judul = p.querySelector('#vr-panel-judul');
+                    const isi = p.querySelector('#vr-panel-isi');
+                    const fotoEl = p.querySelector('#vr-panel-foto');
+                    const latar = p.querySelector('#vr-panel-latar');
+                    const garis = p.querySelector('#vr-panel-garis');
+                    const tutup = p.querySelector('#vr-panel-tutup');
+
+                    const teksJudulVR = keTeksAsciiVR(h.judul.toUpperCase());
+                    const teksIsiVR = keTeksAsciiVR(h.isi);
+                    judul.setAttribute('value', teksJudulVR);
+                    isi.setAttribute('value', teksIsiVR);
+
+                    const refFoto = h.foto ? await cekFotoDetail(h.foto) : null;
+                    const adaFoto = Boolean(refFoto);
+                    const jumlahBaris = hitungBarisTeks(teksIsiVR, 40);
+                    const tinggiTeks = 0.56 + jumlahBaris * 0.125;
+                    const tinggiFoto = adaFoto ? 1.28 : 0;
+                    const tinggiTotal = tinggiTeks + tinggiFoto + (adaFoto ? 0.14 : 0.08);
+                    const atas = tinggiTotal / 2;
+
+                    latar.setAttribute('height', tinggiTotal.toFixed(2));
+                    garis.object3D.position.set(0, atas - 0.022, 0.002);
+                    tutup.object3D.position.set(1.24, atas - 0.17, 0.025);
+                    judul.object3D.position.set(-1.24, atas - 0.14, 0.015);
+
+                    if (adaFoto) {
+                        fotoEl.setAttribute('src', refFoto);
+                        fotoEl.setAttribute('visible', true);
+                        fotoEl.object3D.position.set(0, atas - 0.44 - 0.62, 0.015);
+                        isi.object3D.position.set(-1.24, atas - 0.44 - 1.32, 0.015);
+                    } else {
+                        fotoEl.setAttribute('visible', false);
+                        isi.object3D.position.set(-1.24, atas - 0.44, 0.015);
+                    }
+
+                    const elevasi = THREE.MathUtils.clamp(h.e, -10, 18);
+                    const pos = arahDari(h.g, elevasi, JARAK_PANEL_VR).add(new THREE.Vector3(0, 1.6, 0));
+                    p.object3D.position.copy(pos);
+                    p.object3D.lookAt(0, 1.6, 0);
+                    p.setAttribute('visible', true);
+                    tutup.classList.add('clickable');
+                    this.segarkanRaycaster();
+                },
+
+                tutupPanelVR() {
+                    this.panelVR.setAttribute('visible', false);
+                    this.panelVR.querySelector('#vr-panel-tutup').classList.remove('clickable');
+                    this.segarkanRaycaster();
+                },
+
+                perbaruiHud(lantai, idx, hasilGambar) {
+                    const titik = lantai.titik[idx];
+                    const totalLantai = lantai.titik.length;
+                    const nomorGlobal = indeksGlobal(lantai.id, idx) + 1;
+
+                    document.getElementById('hud-lantai').textContent = `${lantai.lencana}: ${lantai.subSingkat}`;
+                    document.getElementById('hud-nama').textContent = titik.nama;
+                    document.getElementById('hud-deskripsi').textContent = titik.desk;
+                    document.getElementById('hud-urutan').innerHTML =
+                        `Titik <strong>${idx + 1}</strong> / <strong>${totalLantai}</strong>`;
+                    document.getElementById('hud-langkah-total').textContent =
+                        `Langkah ${nomorGlobal} / ${URUTAN_GLOBAL.length}`;
+
+                    const badgePlaceholder = document.getElementById('hud-mode-placeholder');
+                    if (hasilGambar && !hasilGambar.asli) {
+                        badgePlaceholder.textContent = `Placeholder: ${titik.file}`;
+                        badgePlaceholder.classList.remove('sembunyi');
+                    } else {
+                        badgePlaceholder.classList.add('sembunyi');
+                    }
+
+                    const targetMundur = targetLangkahGlobal(lantai.id, idx, -1);
+                    const targetMaju = targetLangkahGlobal(lantai.id, idx, 1);
+                    const btnMundur = document.getElementById('btn-mundur');
+                    const btnMaju = document.getElementById('btn-maju');
+
+                    btnMundur.disabled = targetMundur === null;
+                    btnMaju.disabled = targetMaju === null;
+
+                    if (targetMundur) {
+                        const lMundur = cariLantai(targetMundur.lantaiId);
+                        btnMundur.textContent = lMundur.id !== lantai.id ? `◀ ${lMundur.singkat}` : '◀ Mundur';
+                        btnMundur.title = `Mundur ke ${lMundur.lencana}: ${lMundur.titik[targetMundur.idx].nama}`;
+                    } else {
+                        btnMundur.textContent = '◀ Mundur';
+                        btnMundur.title = 'Titik awal tur (Pintu Masuk Lantai 1)';
+                    }
+
+                    if (targetMaju) {
+                        const lMaju = cariLantai(targetMaju.lantaiId);
+                        btnMaju.textContent = lMaju.id !== lantai.id ? `Naik ${lMaju.singkat} ▶` : 'Maju ▶';
+                        btnMaju.title = `Maju ke ${lMaju.lencana}: ${lMaju.titik[targetMaju.idx].nama}`;
+                    } else {
+                        btnMaju.textContent = 'Selesai di Sini';
+                        btnMaju.title = 'Titik akhir seluruh rute tur';
+                    }
+
+                    document.querySelectorAll('#hud-navigasi button').forEach(btn => {
+                        const aktif = btn.dataset.lantai === lantai.id;
+                        btn.classList.toggle('aktif', aktif);
+                        btn.setAttribute('aria-current', aktif ? 'page' : 'false');
+                    });
+                }
+            });
+
+            document.querySelector('#adegan-vr').setAttribute('tur-museum', '');
+        }
+
+        document.addEventListener('DOMContentLoaded', inisialisasiAFrame);
+
+        document.addEventListener('keydown', ev => {
+            const modalTerbuka = !document.getElementById('modal-info-overlay').classList.contains('sembunyi');
+            if (ev.key === 'Escape' && modalTerbuka) {
+                tutupPanelInfo();
+                return;
+            }
+
+            const sedangDi360 = !document.getElementById('hud-lokasi').classList.contains('sembunyi');
+            if (!sedangDi360 || modalTerbuka) return;
+
+            if (ev.key === 'ArrowRight') {
+                navigasiLangkah(1);
+            } else if (ev.key === 'ArrowLeft') {
+                navigasiLangkah(-1);
+            } else if (ev.key === 'k' || ev.key === 'K') {
+                modeKalibrasi = !modeKalibrasi;
+                document.getElementById('hud-kalibrasi').classList.toggle('sembunyi', !modeKalibrasi);
+            }
+        });
+    </script>
+
+</body>
+
+</html>
