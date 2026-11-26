@@ -81,8 +81,8 @@ const DATA_LANTAI = [
                         judul: 'Koleksi Harpa Konser (Concert Harp)',
                         isi: 'Harpa konser merupakan instrumen kordofon berdawai puluhan yang dipetik dengan kedua tangan. Pada harpa pedal modern, pemain menggunakan tujuh pedal kaki untuk mengubah ketegangan senar secara setengah nada (semitone) sehingga dapat memainkan seluruh tangga nada kromatis.',
                         foto: 'img/detail_harpa.jpg',
-                        audio: 'audio/harpa_konser.mp3',
-                        labelAudio: 'Harpa Konser Klasik'
+                        audio: 'audio/harp_sound.mp3',
+                        labelAudio: 'Petikan Harpa'
                     },
                     {
                         g: 248, e: 4,
@@ -137,7 +137,7 @@ const DATA_LANTAI = [
                         judul: 'Ansambel Perkusi Bilah & Gong Tradisional',
                         isi: 'Panggung terbuka di tengah aula Lantai 1 yang memamerkan perpaduan xilofon kayu, metallofon perunggu, kendang, dan gong gantung dari tradisi musik Asia Tenggara dan Afrika.',
                         foto: 'img/detail_panggung_tengah.jpg',
-                        audio: 'audio/perkusi_bilah.mp3',
+                        audio: 'audio/balafon_audio.mp3',
                         labelAudio: 'Perkusi Bilah Kayu (Balafon)'
                     }
                 ]
@@ -193,7 +193,7 @@ const DATA_LANTAI = [
                         judul: 'Koleksi Musik Tradisional Tiongkok (Guzheng, Erhu & Pipa)',
                         isi: 'Zona Tiongkok memamerkan keluarga instrumen klasik berusia ribuan tahun: Guzheng (kecapi petik horizontal bersenar banyak dengan penyangga nada geser), Pipa (lute pir empat senar), Ruan, Erhu (rebab gesek dua senar), seruling bambu Dizi, Sheng (organ mulut), serta gong perunggu.',
                         foto: 'img/detail_china.jpg',
-                        audio: 'audio/guzheng_china.mp3',
+                        audio: 'audio/guzheng_solo.mp3',
                         labelAudio: 'Guzheng Tradisional Tiongkok'
                     },
                     {
