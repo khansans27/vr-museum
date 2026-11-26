@@ -272,7 +272,7 @@ const DATA_LANTAI = [
         judul: "Sejarah Keroncong, K-Pop, Musisi Indonesia, Rock 'n' Roll, Beatles & Jazz",
         deskripsi: "Melanjutkan langkah di Lantai 2 dari ruang Sejarah Keroncong Kampung Tugu, lantai catur K-Pop dan piano lantai raksasa, lorong potret musisi, panggung diva dunia, koridor memorabilia Indonesia, Gold Award, legenda Rock, Elvis Presley, Abbey Road, hingga World Festival Jazz Stage.",
         warnaFallback: '#1a273b',
-        thumbnail: 'img/GP__2291.JPG',
+        thumbnail: 'img/detail_jazz_stage.jpg',
         fallbackThumbnail: 'img/detail_beatles.jpg',
         utama: false,
         titik: [
@@ -472,7 +472,7 @@ const DATA_LANTAI = [
                         g: 190, e: 6,
                         judul: 'Panggung World Festival Jazz Stage',
                         isi: 'Replika panggung festival jazz internasional lengkap dengan penataan instrumen band, saksofon, gitar hollow-body, piano, dan pencahayaan panggung biru.',
-                        foto: 'img/GP__2291.JPG',
+                        foto: 'img/detail_jazz_stage.jpg',
                         audio: 'audio/saksofon_jazz.mp3',
                         labelAudio: 'Saksofon Panggung Jazz'
                     },
