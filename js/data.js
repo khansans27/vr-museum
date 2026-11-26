@@ -19,12 +19,6 @@ const DATA_LANTAI = [
                 hadap: 180, gMaju: 180, eMaju: -6, gMundur: null, eMundur: -6,
                 info: [
                     {
-                        g: 145, e: 8,
-                        judul: 'History of Recording (1857-1991)',
-                        isi: "Panel linimasa sejarah teknologi perekaman suara dunia:\n- 1857, Phonautograph: alat ciptaan Edouard-Leon Scott de Martinville yang mengguratkan gelombang suara pada kertas berasap.\n- 1877, Cylinder Phonograph: silinder timah dan lilin Thomas Alva Edison yang pertama kali merekam sekaligus memutar ulang suara.\n- 1900, Gramophone: piringan datar Emile Berliner yang melahirkan industri rekaman piringan hitam.\n- 1963, Compact Cassette: pita magnetik ringkas buatan Philips yang memopulerkan pemutar musik portabel.\n- 1980, Compact Disc (CD): cakram optik digital hasil kolaborasi Sony dan Philips.",
-                        foto: 'img/GP__2317.JPG'
-                    },
-                    {
                         g: 215, e: 6,
                         judul: 'Gerbang Utama & Panggung Sambutan',
                         isi: 'Fasad utama Museum Musik Dunia di kawasan Jawa Timur Park 3, Kota Batu. Museum tiga lantai ini menghimpun ribuan instrumen tradisional dan modern dari lima benua (Asia, Afrika, Amerika, Eropa, dan Australia) beserta memorabilia musisi Indonesia dan dunia.',
