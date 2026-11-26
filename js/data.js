@@ -346,7 +346,10 @@ const DATA_LANTAI = [
                         g: 298, e: 6,
                         judul: 'Zona Diva Vokal & Musik Pop Internasional (Celine Dion)',
                         isi: 'Panggung apresiasi penyanyi pop balada internasional yang menampilkan figur Celine Dion beserta potret vokalis dunia yang menandai era keemasan album fisik dan soundtrack film dekade 1990-an.',
-                        foto: 'img/detail_celine_dion.jpg'
+                        foto: 'img/detail_celine_dion.jpg',
+                        audio: 'audio/Celene Dion.mp3',
+                        labelAudio: 'Céline Dion - It s All Coming Back to Me Now (Sample) '
+                       
                     }
                 ]
             },
@@ -405,8 +408,8 @@ const DATA_LANTAI = [
                         judul: 'Figur Panggung Freddie Mercury, KISS & Tony Q Rastafara',
                         isi: 'Panggung figur musisi berkarakter visual kuat: Freddie Mercury dengan jubah mahkota ikonik tur Magic (1986), kostum zirah berduri khas grup glam-hard rock KISS, serta dokumentasi musisi reggae Indonesia Tony Q Rastafara.',
                         foto: 'img/detail_freddie_kiss.jpg',
-                        audio: 'audio/ritme_reggae_rock.mp3',
-                        labelAudio: 'Ritme Bass & Gitar Reggae'
+                        audio: 'audio/Bohemian Rhapsody.mp3',
+                        labelAudio: 'Bohemian Rhapsody - Queen'
                     }
                 ]
             },
@@ -466,23 +469,22 @@ const DATA_LANTAI = [
                 file: 'GS__2271.JPG',
                 nama: 'World Festival Jazz Stage & Jazz Bar (Menuju Lantai 3)',
                 desk: 'Panggung biru World Festival Jazz Stage dan sudut klasik Jazz Bar di ujung Lantai 2. Klik panah maju untuk naik ke Lantai 3.',
-                hadap: 165, gMaju: 112, eMaju: -6, gMundur: 268, eMundur: -6,
+                hadap: 165, gMaju: 268, eMaju: -6, gMundur: 112, eMundur: -6,
                 info: [
                     {
                         g: 190, e: 6,
                         judul: 'Panggung World Festival Jazz Stage',
                         isi: 'Replika panggung festival jazz internasional lengkap dengan penataan instrumen band, saksofon, gitar hollow-body, piano, dan pencahayaan panggung biru.',
                         foto: 'img/detail_jazz_stage.jpg',
-                        audio: 'audio/saksofon_jazz.mp3',
-                        labelAudio: 'Saksofon Panggung Jazz'
+                        audio: 'audio/jazz cafe.mp3',
+                        labelAudio: 'Contoh Jazz Musik'
                     },
                     {
                         g: 58, e: 6,
                         judul: 'Sudut Klasik Jazz Bar & Arsip Musik Blues',
                         isi: 'Ruang bertema klub jazz klasik yang memamerkan pemutar piringan hitam, radio tabung, foto legenda blues dan jazz seperti B.B. King dan Louis Armstrong, serta koleksi vinyl era 1940-an hingga 1960-an.',
-                        foto: 'img/GP__2289.JPG',
-                        audio: 'audio/blues_jazz_bar.mp3',
-                        labelAudio: 'Harmonika & Musik Blues Klasik'
+                        audio: 'audio/Walking Blues-Robert Johnson.mp3',
+                        labelAudio: 'Walking Blues by Robert Johnson (Cover)'
                     }
                 ]
             }
