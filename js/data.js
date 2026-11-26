@@ -310,7 +310,9 @@ const DATA_LANTAI = [
                         g: 185, e: 4,
                         judul: 'Zona Gelombang Musik K-Pop & Figur BTS',
                         isi: 'Menampilkan fenomena global musik pop Korea Selatan (Korean Wave / Hallyu) melalui panggung figur grup vokal BTS dan dokumentasi musisi K-Pop seperti PSY yang memadukan produksi musik elektronik, hip-hop, koreografi panggung, serta komunitas penggemar lintas negara.',
-                        foto: 'img/detail_bts.jpg'
+                        foto: 'img/detail_bts.jpg',
+                        audio: 'audio/Dynamite.mp3',
+                        labelAudio: 'Dynamite - BTS'
                     },
                     {
                         g: 102, e: 2,
@@ -400,8 +402,8 @@ const DATA_LANTAI = [
                         judul: 'Dinding Legenda Gitar & Rock: Eric Clapton, Queen & Deep Purple',
                         isi: 'Menghimpun gitar elektrik, piringan emas, dan dokumentasi konser ikon blues-rock dunia Eric Clapton, kuartet rock progresif-teatrikal Inggris Queen, serta pelopor hard rock Deep Purple, berdampingan dengan sejarah grup rock Indonesia God Bless.',
                         foto: 'img/GP__2275.JPG',
-                        audio: 'audio/gitar_distorsi_rock.mp3',
-                        labelAudio: 'Gitar Elektrik Distorsi Rock'
+                        audio: 'audio/Tears In Heaven.mp3',
+                        labelAudio: 'Tears in Heavenn - Etric Claptonn'
                     },
                     {
                         g: 252, e: 4,
@@ -424,8 +426,8 @@ const DATA_LANTAI = [
                         judul: "King of Rock 'n' Roll: Elvis Presley",
                         isi: "Panggung merah berlampu sorot yang menampilkan figur Elvis Presley dalam balutan jumpsuit putih berhias permata era konser Las Vegas 1970-an. Sejak pertengahan 1950-an, Elvis memadukan rhythm and blues Afrika-Amerika dengan musik country dan gospel hingga melambungkan budaya Rock 'n' Roll ke seluruh dunia.",
                         foto: 'img/detail_elvis.jpg',
-                        audio: 'audio/gitar_rock_n_roll.mp3',
-                        labelAudio: "Riff Gitar Rock 'n' Roll"
+                        audio: 'audio/Jailhouse Rock.mp3',
+                        labelAudio: 'Jailhouse Rock - Elvis Presley'
                     },
                     {
                         g: 162, e: 6,
