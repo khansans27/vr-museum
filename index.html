@@ -35,15 +35,11 @@
                         alt="Halaman utama dan pintu masuk Museum Musik Dunia"
                         onerror="this.style.display='none';">
                     <div class="pembuka-visual-scrim">
-                        <div class="keterangan-foto">
-                            Pintu Masuk Utama Lantai 1 (GS__2316.JPG), titik awal tur berurutan hingga Lantai 3
-                        </div>
                     </div>
                 </div>
 
                 <div class="pembuka-konten">
                     <header>
-                        <div class="plakat-logo" aria-label="Placeholder logo museum">[LOGO MUSEUM]</div>
                         <h1 id="judul-pembuka" class="judul-utama">Museum Musik Dunia 360°</h1>
                     </header>
 
@@ -148,13 +144,10 @@
         </div>
     </div>
 
-    <!-- Bilah shortcut lantai instan -->
     <nav id="hud-navigasi" class="hud sembunyi" aria-label="Shortcut lantai museum"></nav>
 
-    <!-- Pembaca sudut kalibrasi opsional (tekan tombol K di keyboard) -->
     <div id="hud-kalibrasi" class="hud panel-hud sembunyi" aria-live="off">Azimuth g: 180° | Elevasi e: 0°</div>
 
-    <!-- Frame 5: Dialog informasi koleksi (mode desktop dan seluler) -->
     <div id="modal-info-overlay" class="sembunyi" onclick="jikaKlikLatarModal(event)">
         <div class="modal-info-kartu" role="dialog" aria-modal="true" aria-labelledby="modal-info-judul">
             <div class="modal-info-header">
@@ -179,7 +172,7 @@
         </div>
     </div>
 
-    <!-- Adegan 3D Web VR A-Frame 1.6.0 -->
+    <!-- Sebagai tempat buat 360 vr -->
     <a-scene id="adegan-vr" cursor="rayOrigin: mouse" raycaster="objects: .clickable"
         renderer="colorManagement: true; antialias: true" vr-mode-ui="enabled: true" loading-screen="enabled: false">
 
@@ -187,7 +180,7 @@
         <a-sky id="langit" rotation="0 0 0" material="shader: flat; color: #ffffff"></a-sky>
         <a-entity id="wadah-hotspot" position="0 1.6 0"></a-entity>
 
-        <!-- Panel informasi 3D khusus saat berada di mode VR Headset/Cardboard -->
+    
         <a-entity id="panel-info-vr" visible="false">
             <a-plane id="vr-panel-latar" width="2.8" height="1.7" color="#181613" opacity="0.96"
                 material="shader: flat; transparent: true"></a-plane>
